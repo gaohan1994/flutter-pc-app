@@ -27,7 +27,7 @@ class ProductInfo {
     this.memberPrice,
     this.name,
     this.number,
-    this.pic,
+    // this.pic,
     this.price,
     this.saleNumber,
     this.standard,
@@ -39,9 +39,9 @@ class ProductInfo {
 
   int id;
   String name;
-  double number;
-  String pic;
-  String barcode;
+  double? number;
+  String? pic;
+  String? barcode;
   double price;
   String? brand;
   String? createTime;
@@ -83,6 +83,7 @@ class ProductType {
   int id;
   int? parentId;
   String name;
+  int? isDefault;
   List<ProductType>? subCategory;
 
   factory ProductType.fromJson(Map<String, dynamic> json) =>

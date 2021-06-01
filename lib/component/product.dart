@@ -58,25 +58,35 @@ class _ProductState extends State<Product> {
         margin: const EdgeInsets.only(bottom: 4, right: 7),
         child: Column(
           children: [
-            Image.network(
-              widget.item.pic,
-              fit: BoxFit.cover,
-              width: ScreenUtil().setWidth(100),
-              height: ScreenUtil().setHeight(90),
-            ),
+            widget.item.pic != null && widget.item.pic != ""
+                ? Image.network(
+                    widget.item.pic ?? '',
+                    fit: BoxFit.cover,
+                    width: ScreenUtil().setWidth(100),
+                    height: ScreenUtil().setHeight(90),
+                  )
+                : Image(
+                    image: const AssetImage('assets/img_default_image.png'),
+                    fit: BoxFit.cover,
+                    width: ScreenUtil().setWidth(100),
+                    height: ScreenUtil().setHeight(90),
+                  ),
             Padding(
               padding: const EdgeInsets.all(6),
               child: Column(
                 children: [
-                  Text(
-                    // widget.item!.name,
-                    widget.item.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: ScreenUtil().setSp(9)),
+                  Container(
+                    width: 90.w,
+                    height: 22.h,
+                    child: Text(
+                      widget.item.name,
+                      textAlign: TextAlign.left,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: ScreenUtil().setSp(9)),
+                    ),
                   ),
                   Container(
-                    margin: EdgeInsets.only(top: 6),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [

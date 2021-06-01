@@ -3,7 +3,6 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pc_app/model/product.dart';
 import 'package:pc_app/provider/home.dart';
-import 'package:pc_app/route/application.dart';
 import 'package:provider/provider.dart';
 import '../component/shop_cart.dart';
 import '../component/product.dart';
@@ -16,9 +15,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  EasyRefreshController _controller = EasyRefreshController();
-
-  final ScrollController scrollController = new ScrollController();
+  // 滑动的controller
+  final ScrollController scrollController = ScrollController();
+  // 创建 TextEditngController
+  final TextEditingController _controller = TextEditingController();
+  // 是否显示搜索列表
+  bool showSearchList = false;
+  // 查询到的商品列表
+  List<ProductInfo> searchProducts = [];
   // 挂单列表
   List _delayOrderList = [
     {"time": DateTime.now(), "data": []}
@@ -27,13 +31,35 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      // 初始化商品列表
-      context.read<HomePageProvider>().getProducts();
-
+    Future.microtask(() async {
       // 初始化商品分类
-      context.read<HomePageProvider>().getProductType();
+      await context.read<HomePageProvider>().getProductType();
+      // 初始化商品列表
+      await context.read<HomePageProvider>().getProducts();
     });
+  }
+
+  // 搜索商品
+  void fetchProducts(String value) {
+    if (value == '') {
+      setState(() {
+        searchProducts = [];
+      });
+    } else {
+      var _productsList = context.read<HomePageProvider>().productsList;
+      List<ProductInfo> _searchList = [];
+
+      for (int i = 0; i < _productsList.length; i++) {
+        if (_productsList[i].name.contains(value)) {
+          _searchList.add(_productsList[i]);
+        }
+      }
+
+      print('搜索 _searchList 数量${_searchList.length}');
+      setState(() {
+        searchProducts = _searchList;
+      });
+    }
   }
 
   @override
@@ -82,10 +108,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildCategoryItem(ProductType item) {
-    final alreadySelected = item.name == '无码商品';
+    final selectedProductType =
+        context.watch<HomePageProvider>().selectedProductType;
+    final alreadySelected = item.id == selectedProductType;
     return InkWell(
-      onTap: () => {Application.router?.navigateTo(context, '/login')},
-      onHover: (value) => {},
+      onTap: () =>
+          {context.read<HomePageProvider>().switchProductTtype(item.id)},
       child: Container(
         decoration: BoxDecoration(
             color: alreadySelected ? Colors.blue[50] : Colors.white,
@@ -106,7 +134,8 @@ class _HomePageState extends State<HomePage> {
 
   // 构建主体部分搜索功能
   Widget _buildSearch() {
-    final TextEditingController _controller = TextEditingController();
+    final bool _searchValueEmpty = _controller.value.text.isEmpty;
+
     return Container(
       child: Padding(
           padding: const EdgeInsets.all(4),
@@ -118,9 +147,27 @@ class _HomePageState extends State<HomePage> {
                   child: Container(
                 height: ScreenUtil().setHeight(30),
                 color: Colors.black12,
-                child: TextFormField(
+                child: TextField(
                   controller: _controller,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
+                      suffixIcon: !_searchValueEmpty
+                          ? Container(
+                              width: 10.w,
+                              height: 10.w,
+                              child: IconButton(
+                                  onPressed: () => {
+                                        _controller.clear(),
+                                        setState(() {
+                                          showSearchList = false;
+                                        }),
+                                        fetchProducts('')
+                                      },
+                                  icon: const Icon(
+                                    Icons.close,
+                                    color: Colors.black,
+                                  )),
+                            )
+                          : const Text(''),
                       prefixIcon: Icon(
                         Icons.search,
                         color: Colors.black26,
@@ -135,7 +182,13 @@ class _HomePageState extends State<HomePage> {
                   width: ScreenUtil().setWidth(70),
                   height: ScreenUtil().setHeight(30),
                   child: ElevatedButton(
-                      onPressed: () => {}, child: const Text('搜索')),
+                      onPressed: () => {
+                            setState(() {
+                              showSearchList = true;
+                            }),
+                            fetchProducts(_controller.value.text)
+                          },
+                      child: const Text('搜索')),
                 ),
               )
             ],
@@ -159,7 +212,7 @@ class _HomePageState extends State<HomePage> {
               margin: const EdgeInsets.only(right: 6),
               child: OutlinedButton(
                 style: buttonStyle,
-                onPressed: () => _buildDelayOrderDialog(context),
+                onPressed: () => {},
                 child: const Text('整单删除'),
               ),
             ),
@@ -169,7 +222,7 @@ class _HomePageState extends State<HomePage> {
               margin: const EdgeInsets.only(right: 6),
               child: OutlinedButton(
                 style: buttonStyle,
-                onPressed: () => {},
+                onPressed: () => _buildDelayOrderDialog(context),
                 child: const Text('挂单'),
               ),
             ),
@@ -180,15 +233,17 @@ class _HomePageState extends State<HomePage> {
   Widget _buildBody() {
     final products = context.watch<HomePageProvider>().productsList;
 
+    final renderProducts = !showSearchList ? products : searchProducts;
+
     final Widget child;
 
-    if (products != null && products.length != 0) {
+    if (renderProducts != null && renderProducts.length != 0) {
       child = ListView(
         controller: scrollController,
         padding: const EdgeInsets.all(4),
         children: [
           Wrap(
-              children: products.map((item) {
+              children: renderProducts.map((item) {
             return Product(item: item);
           }).toList())
         ],
