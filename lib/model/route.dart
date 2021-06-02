@@ -8,12 +8,11 @@
 import 'package:flutter/material.dart';
 
 class RouteProvider extends ChangeNotifier {
-  int _index = 0;
+  int _index = 1;
 
   int get index => _index;
 
   void changeIndex(value) {
-    print('value:  ${value}');
     _index = value;
     notifyListeners();
   }

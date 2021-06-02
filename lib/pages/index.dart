@@ -28,8 +28,6 @@ class _IndexPageState extends State<IndexPage> {
   @override
   Widget build(BuildContext context) {
     ServiceUtil.ctx = context;
-    // final index = context.read<RouteProvider>().index;
-    // print("${index}");
     return Scaffold(
       appBar: Navbar(),
       body: IndexedStack(

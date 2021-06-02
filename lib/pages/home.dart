@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pc_app/component/search.dart';
 import 'package:pc_app/model/product.dart';
 import 'package:pc_app/provider/home.dart';
 import 'package:provider/provider.dart';
@@ -17,8 +18,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   // 滑动的controller
   final ScrollController scrollController = ScrollController();
-  // 创建 TextEditngController
-  final TextEditingController _controller = TextEditingController();
   // 是否显示搜索列表
   bool showSearchList = false;
   // 查询到的商品列表
@@ -55,7 +54,6 @@ class _HomePageState extends State<HomePage> {
         }
       }
 
-      print('搜索 _searchList 数量${_searchList.length}');
       setState(() {
         searchProducts = _searchList;
       });
@@ -134,65 +132,22 @@ class _HomePageState extends State<HomePage> {
 
   // 构建主体部分搜索功能
   Widget _buildSearch() {
-    final bool _searchValueEmpty = _controller.value.text.isEmpty;
-
     return Container(
-      child: Padding(
-          padding: const EdgeInsets.all(4),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                  child: Container(
-                height: ScreenUtil().setHeight(30),
-                color: Colors.black12,
-                child: TextField(
-                  controller: _controller,
-                  decoration: InputDecoration(
-                      suffixIcon: !_searchValueEmpty
-                          ? Container(
-                              width: 10.w,
-                              height: 10.w,
-                              child: IconButton(
-                                  onPressed: () => {
-                                        _controller.clear(),
-                                        setState(() {
-                                          showSearchList = false;
-                                        }),
-                                        fetchProducts('')
-                                      },
-                                  icon: const Icon(
-                                    Icons.close,
-                                    color: Colors.black,
-                                  )),
-                            )
-                          : const Text(''),
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: Colors.black26,
-                      ),
-                      hintText: '请输入商品条码或名称',
-                      border: InputBorder.none),
-                ),
-              )),
-              Padding(
-                padding: const EdgeInsets.only(left: 4),
-                child: Container(
-                  width: ScreenUtil().setWidth(70),
-                  height: ScreenUtil().setHeight(30),
-                  child: ElevatedButton(
-                      onPressed: () => {
-                            setState(() {
-                              showSearchList = true;
-                            }),
-                            fetchProducts(_controller.value.text)
-                          },
-                      child: const Text('搜索')),
-                ),
-              )
-            ],
-          )),
+      padding: EdgeInsets.all(4),
+      child: SearchCompoennt(
+        onPress: (value) {
+          setState(() {
+            showSearchList = true;
+          });
+          fetchProducts(value);
+        },
+        onCancel: (value) {
+          setState(() {
+            showSearchList = false;
+          });
+          fetchProducts('');
+        },
+      ),
     );
   }
 
@@ -380,7 +335,6 @@ class _HomePageState extends State<HomePage> {
                             return InkWell(
                               onTap: () {
                                 dialogState(() {
-                                  print('index: ${index}');
                                   _selectedDelayOrderListIndex = index;
                                 });
                               },

@@ -337,3 +337,10 @@ https://blog.csdn.net/yumi0629/article/details/81939936
 
 flutter 的接口请求比较扯淡、非常扯淡 不是比价扯淡
 flutter 不识别 json 所以请求到数据之后先把请求结果 toString()，在用 fromJson 转成 flutter 能够识别的 json 格式
+
+### 格式化字符串形式的日期
+
+```dart
+DateFormat format = DateFormat('yyyy-MM-dd');
+var currentOrderTime = format.format(DateTime.parse(currentOrder.createTime)).toString();
+```

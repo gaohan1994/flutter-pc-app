@@ -37,7 +37,7 @@ class _ProductTag extends State<ProductTag> {
         borderRadius: BorderRadius.circular(5.0),
         color: tagColor,
       ),
-      width: ScreenUtil().setWidth(38),
+      padding: EdgeInsets.only(left: 8, right: 8),
       height: ScreenUtil().setHeight(12),
       child: Center(
           child: Text(widget.name,

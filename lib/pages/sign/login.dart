@@ -28,7 +28,7 @@ class _LoginPage extends State<LoginPage> {
       });
 
       var resultMap = json.decode(result.toString());
-      print('登录结果: ${resultMap['data']}');
+      // print('登录结果: ${resultMap['data']}');
       UserModel user = UserModel.fromJson(resultMap['data']);
 
       // 拿到登录信息 在 result.data 中
@@ -37,10 +37,10 @@ class _LoginPage extends State<LoginPage> {
       if (resultMap['code'] == successCode) {
         SharedPreferences sp = await SharedPreferences.getInstance();
         var saveUserResult = await sp.setString('user', user.toString());
-        print('保存登录信息是否成功: ${saveUserResult}');
+        // print('保存登录信息是否成功: ${saveUserResult}');
         var saveTokenResult =
             await sp.setString('token', user.token.toString());
-        print('保存token是否成功: ${saveTokenResult}');
+        // print('保存token是否成功: ${saveTokenResult}');
         Application.router?.pop(context);
       }
     } catch (e) {

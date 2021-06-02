@@ -34,10 +34,17 @@ Future requestData(String url, {data, method}) async {
       response = await dio.get(url,
           queryParameters: data != null ? data : {}, options: _option);
     }
+
+    if (response.statusCode != 200) {
+      throw Exception('接口请求失败');
+    }
+    if (response.data['code'] != successCode) {
+      throw Exception('接口请求失败');
+    }
+
     return response;
   } catch (e) {
-    print('e: ${e.toString()}');
-    return '';
+    return print('接口请求报错: ${e.toString()}');
   }
 }
 
