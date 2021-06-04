@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:pc_app/model/index.dart';
 import 'package:pc_app/model/user.dart';
+import 'package:pc_app/provider/global.dart';
 import 'package:pc_app/route/application.dart';
 import 'package:pc_app/service/login_method.dart';
 import 'dart:convert';
 
 import 'package:pc_app/service/service_url.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -28,26 +28,28 @@ class _LoginPage extends State<LoginPage> {
       });
 
       var resultMap = json.decode(result.toString());
-      // print('登录结果: ${resultMap['data']}');
+      print('登录结果: ${resultMap.toString()}');
       UserModel user = UserModel.fromJson(resultMap['data']);
 
       // 拿到登录信息 在 result.data 中
       // 如果登录成功则存入本地
       // 如果登录失败则报错
       if (resultMap['code'] == successCode) {
+        print('user.toJson().toString(): ${json.encode(user.toJson())}');
+
         SharedPreferences sp = await SharedPreferences.getInstance();
-        var saveUserResult = await sp.setString('user', user.toString());
-        // print('保存登录信息是否成功: ${saveUserResult}');
         var saveTokenResult =
             await sp.setString('token', user.token.toString());
         // print('保存token是否成功: ${saveTokenResult}');
-        Application.router?.pop(context);
+        context.read<ProfileChangeNotifier>().user = user;
+        Application.router?.navigateTo(context, '/');
       }
     } catch (e) {
       print('登录报错:${e}');
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(

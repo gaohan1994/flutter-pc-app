@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pc_app/component/product_tag.dart';
 import 'package:pc_app/model/order.dart';
+import 'package:pc_app/provider/order.dart';
+import 'package:provider/provider.dart';
 
 class OrderItem extends StatelessWidget {
   OrderItem({required this.item});
@@ -10,12 +12,23 @@ class OrderItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 判断当前订单是否是选中的订单
+    var selectedOrderId = context.watch<OrderPageProvider>().selectedOrderId;
+    bool currentOrderSelected = item.orderNo == selectedOrderId;
+
+    // 点击订单触发请求详情函数
+    var onPressedHandle = context.read<OrderPageProvider>().changeSelectedOrder;
+
     return InkWell(
+      onTap: () {
+        onPressedHandle(item);
+      },
       child: Container(
         height: 60.h,
         padding: EdgeInsets.all(6),
         alignment: Alignment.center,
         decoration: BoxDecoration(
+            color: currentOrderSelected ? Colors.blue.shade50 : Colors.white,
             border:
                 Border(bottom: BorderSide(width: 1, color: Colors.black12))),
         child: Row(

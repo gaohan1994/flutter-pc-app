@@ -5,10 +5,10 @@
  * @Last Modified time: 2021-06-01 10:09:39
  */
 import 'package:flutter/material.dart';
+import 'package:pc_app/common/global.dart';
 import 'package:pc_app/component/navbar.dart';
 import 'package:pc_app/model/route.dart';
-import 'package:pc_app/provider/home.dart';
-import 'package:pc_app/route/application.dart';
+import 'package:pc_app/pages/sign/login.dart';
 import 'package:pc_app/service/service_url.dart';
 import 'package:provider/provider.dart';
 import './home.dart';
@@ -21,6 +21,11 @@ class IndexPage extends StatefulWidget {
 }
 
 class _IndexPageState extends State<IndexPage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   final List<Widget> bodyList = [
     HomePage(),
     OrderPage(),
@@ -28,12 +33,21 @@ class _IndexPageState extends State<IndexPage> {
   @override
   Widget build(BuildContext context) {
     ServiceUtil.ctx = context;
-    return Scaffold(
-      appBar: Navbar(),
-      body: IndexedStack(
-        index: context.watch<RouteProvider>().index,
-        children: bodyList,
-      ),
+    return FutureBuilder(
+      future: Global.init(context),
+      builder: (context, snapshot) {
+        if (snapshot.data != null) {
+          return Scaffold(
+            appBar: Navbar(),
+            body: IndexedStack(
+              index: context.watch<RouteProvider>().index,
+              children: bodyList,
+            ),
+          );
+        } else {
+          return LoginPage();
+        }
+      },
     );
   }
 }

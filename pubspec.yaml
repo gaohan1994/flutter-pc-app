@@ -50,6 +50,7 @@ dependencies:
   flutter_easyrefresh: ^2.2.1
   date_format: ^2.0.2
   intl: ^0.17.0
+  oktoast: ^3.0.0
 
 dev_dependencies:
   flutter_test:

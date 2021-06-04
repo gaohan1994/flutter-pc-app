@@ -15,34 +15,49 @@ class OrderPageProvider extends ChangeNotifier {
   // 订单列表
   List<Order> _orderList = [];
   List<Order> get orderList => _orderList;
+  set orderList(list) {
+    _orderList = list;
+    setOrderListByTime(list);
+  }
 
   // 订单列表按照时间排序
   List<OrderByTime> _orderListByTime = [];
   List<OrderByTime> get orderListByTime => _orderListByTime;
 
+  // 选中的订单id
+  String _selectedOrderId = '';
+  String get selectedOrderId => _selectedOrderId;
+
+  OrderDetail? orderDetail;
+
   void setOrderListByTime(List<Order> data) {
-    List<OrderByTime> _dataByTime = _orderListByTime;
+    if (data.isEmpty) {
+      _orderListByTime = [];
+    } else {
+      List<OrderByTime> _dataByTime = _orderListByTime;
 
-    for (int i = 0; i < data.length; i++) {
-      var currentOrder = data[i];
-      var currentOrderTime =
-          format.format(DateTime.parse(currentOrder.createTime)).toString();
+      for (int i = 0; i < data.length; i++) {
+        var currentOrder = data[i];
+        var currentOrderTime =
+            format.format(DateTime.parse(currentOrder.createTime)).toString();
 
-      // 查找按照时间排序的数组里面有没有当前order时间得项
-      int byTimeIndex = _dataByTime.indexWhere((dataItemByTime) {
-        return dataItemByTime.title == currentOrderTime;
-      });
+        // 查找按照时间排序的数组里面有没有当前order时间得项
+        int byTimeIndex = _dataByTime.indexWhere((dataItemByTime) {
+          return dataItemByTime.title == currentOrderTime;
+        });
 
-      // 如果查到有这个时间戳的数组了则插入到找到的这个数组中，如果没有则新建
-      if (byTimeIndex == -1) {
-        OrderByTime obt = OrderByTime(currentOrderTime, [currentOrder]);
-        _dataByTime.add(obt);
-      } else {
-        _dataByTime[byTimeIndex].data.add(currentOrder);
+        // 如果查到有这个时间戳的数组了则插入到找到的这个数组中，如果没有则新建
+        if (byTimeIndex == -1) {
+          OrderByTime obt = OrderByTime(currentOrderTime, [currentOrder]);
+          _dataByTime.add(obt);
+        } else {
+          _dataByTime[byTimeIndex].data.add(currentOrder);
+        }
       }
+
+      _orderListByTime = _dataByTime;
     }
 
-    _orderListByTime = _dataByTime;
     notifyListeners();
   }
 
@@ -51,7 +66,8 @@ class OrderPageProvider extends ChangeNotifier {
     var params = {
       "pageNum": 1,
       "pageSize": pageSize,
-      "orderByColumn": "o.create_time desc"
+      "transFlag": 2
+      // "orderByColumn": "o.create_time desc"
     };
     print('getOrderList 请求订单列表参数: ${params.toString()}');
 
@@ -63,6 +79,10 @@ class OrderPageProvider extends ChangeNotifier {
     _orderList = orderListRows;
     setOrderListByTime(_orderList);
 
+    if (orderListRows.isNotEmpty) {
+      getOrderDetail(orderListRows[0].orderNo);
+    }
+
     page = 1;
     notifyListeners();
   }
@@ -72,7 +92,8 @@ class OrderPageProvider extends ChangeNotifier {
     var params = {
       "pageNum": page + 1,
       "pageSize": pageSize,
-      "orderByColumn": "o.create_time desc"
+      "transFlag": 2
+      // "orderByColumn": "o.create_time desc"
     };
     print('loadMoreOrder 请求订单列表参数: ${params.toString()}');
 
@@ -86,5 +107,48 @@ class OrderPageProvider extends ChangeNotifier {
 
     page++;
     notifyListeners();
+  }
+
+  // 点击订单时触发修改选中id和详情
+  void changeSelectedOrder(Order item) {
+    _selectedOrderId = item.orderNo;
+    getOrderDetail(item.orderNo);
+    notifyListeners();
+  }
+
+  // 请求订单详情
+  Future getOrderDetail(String orderId) async {
+    var params = {"orderNo": orderId};
+    print('请求订单详情参数:${params}');
+
+    var result = await fetchOrderDetail(params: params);
+    var resultMap = json.decode(result.toString());
+    var _detail = OrderDetail.fromJson(resultMap['data']);
+
+    orderDetail = _detail;
+    notifyListeners();
+  }
+
+  String getOrderStatus(status) {
+    switch (status) {
+      case -2:
+        return '异常订单';
+      case -1:
+        return '交易失败';
+      case 0:
+        return '待支付';
+      case 1:
+        return '支付完成';
+      case 2:
+        return '交易关闭';
+      case 3:
+        return '交易完成';
+      case 4:
+        return '交易取消';
+      case 5:
+        return '支付中';
+      default:
+        return '';
+    }
   }
 }

@@ -7,9 +7,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pc_app/model/route.dart';
+import 'package:pc_app/provider/global.dart';
+import 'package:pc_app/provider/home.dart';
+import 'package:pc_app/provider/order.dart';
+import 'package:pc_app/route/application.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Navbar extends StatelessWidget implements PreferredSizeWidget {
+class Navbar extends StatefulWidget implements PreferredSizeWidget {
   // appbar 高度
   final appbarHeight = ScreenUtil().setWidth(38);
 
@@ -18,6 +23,31 @@ class Navbar extends StatelessWidget implements PreferredSizeWidget {
 
   Size getSize() {
     return Size(appbarHeight, appbarHeight);
+  }
+
+  @override
+  State<StatefulWidget> createState() {
+    return _Navbar();
+  }
+}
+
+class _Navbar extends State<Navbar> {
+  final appbarHeight = ScreenUtil().setWidth(38);
+
+  void logout() async {
+    // context.read<HomePageProvider>();
+    // context.read<OrderPageProvider>();
+    // context.read<HomePageProvider>();
+
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    await sp.clear();
+    Application.router?.navigateTo(context, '/login');
+  }
+
+  void onUserPressed() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    var user = sp.getString('user');
+    print('user: ${user}');
   }
 
   @override
@@ -100,11 +130,74 @@ class Navbar extends StatelessWidget implements PreferredSizeWidget {
 
   // 右上角用户模块
   Widget _buildUser() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
+    var user = context.watch<ProfileChangeNotifier>().user;
+    print('user in navbar : ${user}');
+    if (user != null) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          InkWell(
+            onTap: () => logout(),
+            child: Container(
+              padding: const EdgeInsets.only(right: 12),
+              margin: const EdgeInsets.only(right: 12),
+              decoration: const BoxDecoration(
+                  border:
+                      Border(right: BorderSide(width: 1, color: Colors.white))),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.chevron_right_sharp,
+                    size: ScreenUtil().setWidth(14),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(left: 4),
+                    child: Text(
+                      '登出',
+                      style: TextStyle(fontSize: ScreenUtil().setSp(13)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () => onUserPressed(),
+            child: Column(
+              // mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  user.merchantName,
+                  style: TextStyle(fontSize: ScreenUtil().setSp(11)),
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.supervised_user_circle,
+                      size: ScreenUtil().setWidth(12),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(left: 4),
+                      child: Text(
+                        user.userName,
+                        style: TextStyle(fontSize: ScreenUtil().setSp(11)),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+          )
+        ],
+      );
+    } else {
+      return InkWell(
+        onTap: () => onUserPressed(),
+        child: Container(
           padding: const EdgeInsets.only(right: 12),
           margin: const EdgeInsets.only(right: 12),
           decoration: const BoxDecoration(
@@ -120,39 +213,14 @@ class Navbar extends StatelessWidget implements PreferredSizeWidget {
               Container(
                 margin: const EdgeInsets.only(left: 4),
                 child: Text(
-                  '进入后台',
+                  '登录',
                   style: TextStyle(fontSize: ScreenUtil().setSp(13)),
                 ),
               ),
             ],
           ),
         ),
-        Column(
-          // mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '马来进口便利店',
-              style: TextStyle(fontSize: ScreenUtil().setSp(11)),
-            ),
-            Row(
-              children: [
-                Icon(
-                  Icons.supervised_user_circle,
-                  size: ScreenUtil().setWidth(12),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 4),
-                  child: Text(
-                    '陈先生',
-                    style: TextStyle(fontSize: ScreenUtil().setSp(11)),
-                  ),
-                )
-              ],
-            )
-          ],
-        )
-      ],
-    );
+      );
+    }
   }
 }

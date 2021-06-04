@@ -7,6 +7,7 @@ import 'package:pc_app/component/search.dart';
 import 'package:pc_app/model/order.dart';
 import 'package:pc_app/provider/home.dart';
 import 'package:pc_app/provider/order.dart';
+import 'package:pc_app/provider/report.dart';
 import 'package:provider/provider.dart';
 
 class OrderPage extends StatefulWidget {
@@ -35,6 +36,9 @@ class _OrderPageState extends State<OrderPage> {
     Future.microtask(() async {
       // 初始化订单列表
       context.read<OrderPageProvider>().getOrderList();
+
+      // 初始化今日报表
+      context.read<ReportProvider>().getReportToday();
     });
   }
 
@@ -43,6 +47,9 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   void searchOrderList(value) {}
+
+  // 筛选订单
+  void onFilterOrderList() {}
 
   Future<String> _showDatePicker() async {
     Locale myLocale = const Locale('zh');
@@ -53,7 +60,6 @@ class _OrderPageState extends State<OrderPage> {
         lastDate: DateTime.now(),
         locale: myLocale);
     return picker != null ? picker.toString() : '';
-    // return picker.toString();
   }
 
   @override
@@ -71,10 +77,35 @@ class _OrderPageState extends State<OrderPage> {
           ),
         ),
         const VerticalDivider(),
-        const Expanded(child: Text('data')),
+        Expanded(
+            child: Column(
+          children: [
+            _buildOrderDetailInfo(),
+            _buildOrderListItem([
+              {"name": '名称'},
+              {"name": '单价'},
+              {"name": '数量'},
+              {"name": '小计'},
+            ], color: Colors.black12),
+            Expanded(child: _buildOrderListView()),
+            _buildOrderDetailBar(),
+          ],
+        )),
+        const VerticalDivider(),
         Container(
           width: 220.w,
-          child: Text('data'),
+          child: Column(
+            children: [
+              Container(
+                margin: EdgeInsets.only(top: 8),
+                child: _buildOrderPriceCard(),
+              ),
+              Container(
+                padding: EdgeInsets.only(left: 11, right: 11),
+                child: _buildOrderPrice(),
+              )
+            ],
+          ),
         )
       ],
     ));
@@ -194,7 +225,8 @@ class _OrderPageState extends State<OrderPage> {
                   width: ScreenUtil().setWidth(70),
                   height: ScreenUtil().setHeight(25),
                   child: OutlinedButton(
-                      onPressed: () => {}, child: const Text('筛选')),
+                      onPressed: () => {onFilterOrderList()},
+                      child: const Text('筛选')),
                 )
               ],
             ),
@@ -286,10 +318,10 @@ class _OrderPageState extends State<OrderPage> {
       },
       child: Container(
         padding: EdgeInsets.all(9),
-        // height: 25.w,
         width: 115.w,
-        decoration:
-            BoxDecoration(border: Border.all(width: 1, color: Colors.black12)),
+        decoration: BoxDecoration(
+            border: Border.all(width: 1, color: Colors.black12),
+            borderRadius: BorderRadius.all(Radius.circular(3))),
         alignment: Alignment.center,
         child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -314,5 +346,227 @@ class _OrderPageState extends State<OrderPage> {
             ]),
       ),
     );
+  }
+
+  Widget _buildOrderDetailInfoItem({img, title, value, color}) {
+    return Container(
+      width: 180.w,
+      margin: EdgeInsets.only(bottom: 11),
+      child: Row(
+        children: [
+          Container(
+            margin: EdgeInsets.only(right: 5),
+            child: Image(
+              image: AssetImage(img),
+              width: 13.w,
+              height: 13.w,
+            ),
+          ),
+          Expanded(
+              child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(title,
+                  style: TextStyle(
+                      fontSize: ScreenUtil().setSp(11), color: Colors.black45)),
+              Text(value,
+                  style: TextStyle(
+                      fontSize: ScreenUtil().setSp(11),
+                      color: color != null ? color : Colors.black45))
+            ],
+          )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderDetailInfo() {
+    var orderDetail = context.watch<OrderPageProvider>().orderDetail;
+    var getOrderStatus = context.read<OrderPageProvider>().getOrderStatus;
+
+    if (orderDetail != null) {
+      return Container(
+        padding: EdgeInsets.only(top: 11),
+        child: Wrap(
+          spacing: 11,
+          children: [
+            _buildOrderDetailInfoItem(
+                img: 'assets/icon_cashier.png',
+                title: '订单状态',
+                value: getOrderStatus(orderDetail.transFlag),
+                color: Colors.blue),
+            _buildOrderDetailInfoItem(
+                img: 'assets/icon_cashier.png',
+                title: '收银员',
+                value: orderDetail.cashierName),
+            _buildOrderDetailInfoItem(
+                img: 'assets/icon_cashier.png',
+                title: '单号',
+                value: orderDetail.orderNo),
+            _buildOrderDetailInfoItem(
+                img: 'assets/icon_cashier.png',
+                title: '时间',
+                value: orderDetail.createTime),
+          ],
+        ),
+      );
+    } else {
+      return Text('null');
+    }
+  }
+
+  Widget _buildOrderDetailBar() {
+    final buttonStyle = OutlinedButton.styleFrom(
+        side: const BorderSide(width: 1, color: Colors.blue));
+    return Padding(
+        padding: EdgeInsets.all(6),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: ScreenUtil().setHeight(30),
+              width: ScreenUtil().setWidth(90),
+              margin: const EdgeInsets.only(right: 6),
+              child: OutlinedButton(
+                style: buttonStyle,
+                onPressed: () => {},
+                child: const Text('退货'),
+              ),
+            )
+          ],
+        ));
+  }
+
+  Widget _buildOrderListItem(List renderList, {color, bordered}) {
+    var textStyle =
+        TextStyle(fontSize: ScreenUtil().setSp(11), color: Colors.black45);
+
+    return Container(
+      alignment: Alignment.center,
+      height: 32.w,
+      decoration: BoxDecoration(
+          color: color != null ? color : Colors.transparent,
+          border: Border(bottom: BorderSide(width: 1, color: Colors.black12))),
+      child: Row(
+          children: renderList.map((item) {
+        return Expanded(
+          flex: 1,
+          child: Text(
+            item['name'],
+            textAlign: item['align'] != null ? item['align'] : TextAlign.center,
+            style: textStyle,
+          ),
+        );
+      }).toList()),
+    );
+  }
+
+  Widget _buildOrderListView() {
+    var orderDetail = context.watch<OrderPageProvider>().orderDetail;
+
+    if (orderDetail != null && orderDetail.productList.length > 0) {
+      return ListView.builder(
+          itemCount: orderDetail.productList.length,
+          itemBuilder: (BuildContext context, index) {
+            return _buildOrderListItem([
+              {"name": orderDetail.productList[index].productName},
+              {"name": '￥${orderDetail.productList[index].sendUnitPrice}'},
+              {"name": '${orderDetail.productList[index].num}'},
+              {"name": '￥${orderDetail.productList[index].totalAmount}'},
+            ]);
+          });
+    } else {
+      return Text('null');
+    }
+  }
+
+  Widget _buildOrderPriceCard() {
+    var orderDetail = context.watch<OrderPageProvider>().orderDetail;
+
+    var textStyle =
+        TextStyle(fontSize: ScreenUtil().setSp(13), color: Colors.white);
+
+    if (orderDetail != null) {
+      return Container(
+        width: 205.w,
+        height: 80.w,
+        decoration: BoxDecoration(
+            color: Colors.red.shade400,
+            borderRadius: BorderRadius.all(Radius.circular(5))),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Container(
+              padding: EdgeInsets.only(left: 14, right: 14),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '应收金额',
+                    style: textStyle,
+                  ),
+                  Text(
+                    '￥${orderDetail.amt}',
+                    style: textStyle,
+                  )
+                ],
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.only(left: 14, right: 14),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '应收金额',
+                    style: textStyle,
+                  ),
+                  Text(
+                    '￥${orderDetail.amt}',
+                    style: textStyle,
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Text('null');
+    }
+  }
+
+  Widget _buildOrderPrice() {
+    var orderDetail = context.watch<OrderPageProvider>().orderDetail;
+    if (orderDetail != null) {
+      return Column(
+        children: [
+          _buildOrderListItem([
+            {"name": '商品数量', "align": TextAlign.start},
+            {"name": '${orderDetail.totalNum}', "align": TextAlign.end},
+          ]),
+          _buildOrderListItem([
+            {"name": '原价金额', "align": TextAlign.start},
+            {"name": '￥${orderDetail.originalAmt}', "align": TextAlign.end},
+          ]),
+          _buildOrderListItem([
+            {"name": '商品优惠', "align": TextAlign.start},
+            {
+              "name": '-￥${orderDetail.productDiscount}',
+              "align": TextAlign.end
+            },
+          ]),
+          _buildOrderListItem([
+            {"name": '整单优惠', "align": TextAlign.start},
+            {"name": '-￥${orderDetail.priceDiscount}', "align": TextAlign.end},
+          ])
+        ],
+      );
+    } else {
+      return Text('');
+    }
   }
 }
