@@ -6,6 +6,7 @@
  */
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pc_app/model/order.dart';
 import 'package:pc_app/model/route.dart';
 import 'package:pc_app/provider/global.dart';
 import 'package:pc_app/provider/home.dart';
@@ -35,9 +36,7 @@ class _Navbar extends State<Navbar> {
   final appbarHeight = ScreenUtil().setWidth(38);
 
   void logout() async {
-    // context.read<HomePageProvider>();
-    // context.read<OrderPageProvider>();
-    // context.read<HomePageProvider>();
+    context.read<OrderPageProvider>().orderList = [];
 
     SharedPreferences sp = await SharedPreferences.getInstance();
     await sp.clear();

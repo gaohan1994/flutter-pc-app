@@ -11,11 +11,19 @@ class OrderPageProvider extends ChangeNotifier {
   int page = 1;
   // 页码
   int pageSize = 20;
+  // 订单数
+  int total = 0;
+  // 搜索的值
+  String searchValue = '';
+  // 起始日期
+  String startTime = '';
+  // 结束日期
+  String endTime = '';
 
   // 订单列表
   List<Order> _orderList = [];
   List<Order> get orderList => _orderList;
-  set orderList(list) {
+  set orderList(List<Order> list) {
     _orderList = list;
     setOrderListByTime(list);
   }
@@ -34,7 +42,7 @@ class OrderPageProvider extends ChangeNotifier {
     if (data.isEmpty) {
       _orderListByTime = [];
     } else {
-      List<OrderByTime> _dataByTime = _orderListByTime;
+      List<OrderByTime> _dataByTime = [];
 
       for (int i = 0; i < data.length; i++) {
         var currentOrder = data[i];
@@ -66,15 +74,33 @@ class OrderPageProvider extends ChangeNotifier {
     var params = {
       "pageNum": 1,
       "pageSize": pageSize,
-      "transFlag": 2
-      // "orderByColumn": "o.create_time desc"
+      "transFlag": 2,
+      "orderByColumn": "o.create_time desc"
     };
+
+    // 如果搜索的不是空值则查询
+    if (searchValue.isNotEmpty) {
+      params['orderNo'] = searchValue;
+    }
+
+    if (startTime.isNotEmpty) {
+      params['startTime'] = startTime;
+    }
+
+    if (endTime.isNotEmpty) {
+      params['endTime'] = endTime;
+    }
+
     print('getOrderList 请求订单列表参数: ${params.toString()}');
 
     var result = await fetchOrderList(params: params);
     var resultMap = json.decode(result.toString());
 
-    var orderListRows = OrderList.fromJson(resultMap['data']).rows;
+    var orderListData = OrderList.fromJson(resultMap['data']);
+    var orderListTotal = orderListData.total;
+    var orderListRows = orderListData.rows;
+
+    total = orderListTotal;
 
     _orderList = orderListRows;
     setOrderListByTime(_orderList);
@@ -92,9 +118,23 @@ class OrderPageProvider extends ChangeNotifier {
     var params = {
       "pageNum": page + 1,
       "pageSize": pageSize,
-      "transFlag": 2
-      // "orderByColumn": "o.create_time desc"
+      "transFlag": 2,
+      "orderByColumn": "o.create_time desc"
     };
+
+    // 如果搜索的不是空值则查询
+    if (searchValue.isNotEmpty) {
+      params['orderNo'] = searchValue;
+    }
+
+    if (startTime.isNotEmpty) {
+      params['startTime'] = startTime;
+    }
+
+    if (endTime.isNotEmpty) {
+      params['endTime'] = endTime;
+    }
+
     print('loadMoreOrder 请求订单列表参数: ${params.toString()}');
 
     var result = await fetchOrderList(params: params);
@@ -129,7 +169,7 @@ class OrderPageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  String getOrderStatus(status) {
+  static String getOrderStatus(status) {
     switch (status) {
       case -2:
         return '异常订单';
@@ -147,6 +187,19 @@ class OrderPageProvider extends ChangeNotifier {
         return '交易取消';
       case 5:
         return '支付中';
+      default:
+        return '';
+    }
+  }
+
+  static String getOrderRefundStatus(status) {
+    switch (status) {
+      case 0:
+        return '未退货';
+      case 1:
+        return '全部退货';
+      case 2:
+        return '部分退货';
       default:
         return '';
     }

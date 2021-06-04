@@ -344,3 +344,30 @@ flutter 不识别 json 所以请求到数据之后先把请求结果 toString()�
 DateFormat format = DateFormat('yyyy-MM-dd');
 var currentOrderTime = format.format(DateTime.parse(currentOrder.createTime)).toString();
 ```
+
+### 全局变量监听
+
+参考的 https://book.flutterchina.club/chapter15/network.html#_15-5-2-%E5%B0%81%E8%A3%85%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82
+
+但是感觉我自己写的不是很好，很多 flutter 的 null 规则也改了
+我的思路是在 indexpage 页面初始化从 SharedPreferences 本地存储中拿到需要监听的全局变量，赋值给全局 provider
+得到返回数据之后再进行渲染
+
+```dart
+FutureBuilder(
+  future: Global.init(context),
+  builder: (context, snapshot) {
+    if (snapshot.data != null) {
+      return Scaffold(
+        appBar: Navbar(),
+        body: IndexedStack(
+          index: context.watch<RouteProvider>().index,
+          children: bodyList,
+        ),
+      );
+    } else {
+      return LoginPage();
+    }
+  },
+)
+```

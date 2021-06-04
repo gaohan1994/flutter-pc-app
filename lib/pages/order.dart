@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:pc_app/component/order.dart';
 import 'package:pc_app/component/search.dart';
 import 'package:pc_app/model/order.dart';
@@ -27,8 +28,6 @@ class _OrderPageState extends State<OrderPage> {
   String _startTime = '';
   // 订单检索结束日期 默认为空
   String _endTime = '';
-  // 是否显示搜索列表
-  bool showSearchList = false;
 
   @override
   void initState() {
@@ -38,18 +37,45 @@ class _OrderPageState extends State<OrderPage> {
       context.read<OrderPageProvider>().getOrderList();
 
       // 初始化今日报表
-      context.read<ReportProvider>().getReportToday();
+      context.read<ReportProvider>().getReportToday(context);
     });
   }
 
-  void fetchOrderList(value) {
+  void fetchOrderList() {
     context.read<OrderPageProvider>().getOrderList();
   }
 
   void searchOrderList(value) {}
 
   // 筛选订单
-  void onFilterOrderList() {}
+  void onFilterOrderList() {
+    try {
+      if (_startTime.isEmpty) {
+        throw Exception('请选择起始日期');
+      }
+      if (_endTime.isEmpty) {
+        throw Exception('请选择结束日期');
+      }
+
+      DateTime startTime = DateTime.parse(_startTime);
+      DateTime endTime = DateTime.parse(_endTime);
+
+      if (startTime.isAfter(endTime)) {
+        throw Exception('结束日期不能早于起始日期');
+      }
+
+      // 通过校验，设置时间格式
+      context.read<OrderPageProvider>().startTime =
+          format.format(startTime).toString();
+
+      context.read<OrderPageProvider>().endTime =
+          format.format(endTime).toString();
+
+      fetchOrderList();
+    } catch (e) {
+      showToast(e.toString());
+    }
+  }
 
   Future<String> _showDatePicker() async {
     Locale myLocale = const Locale('zh');
@@ -141,34 +167,34 @@ class _OrderPageState extends State<OrderPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildColorItem(
-                  title: Text('今日销售笔数',
+                  title: Text('今日销售 2 数',
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: ScreenUtil().setSp(10))),
                   detail: Text(
-                    'data',
+                    '￥ 200.00',
                     style: TextStyle(color: Colors.white),
                   ),
                   color: Colors.orange,
                   padding: EdgeInsets.fromLTRB(14, 11, 14, 11)),
               _buildColorItem(
-                  title: Text('今日销售笔数',
+                  title: Text('今日销售 2 数',
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: ScreenUtil().setSp(10))),
                   detail: Text(
-                    'data',
+                    '￥ 200.00',
                     style: TextStyle(color: Colors.white),
                   ),
                   color: Colors.blue,
                   padding: EdgeInsets.fromLTRB(14, 11, 14, 11)),
               _buildColorItem(
-                  title: Text('今日销售笔数',
+                  title: Text('今日销售 2 数',
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: ScreenUtil().setSp(10))),
                   detail: Text(
-                    'data',
+                    '￥ 200.00',
                     style: TextStyle(color: Colors.white),
                   ),
                   color: Colors.red,
@@ -179,18 +205,13 @@ class _OrderPageState extends State<OrderPage> {
             margin: EdgeInsets.only(top: 8),
             child: SearchCompoennt(
               onPress: (value) {
-                // scrollController.jumpTo(0);
-                setState(() {
-                  showSearchList = true;
-                });
-                fetchOrderList(value);
+                context.read<OrderPageProvider>().searchValue = value;
+                fetchOrderList();
               },
               onCancel: (value) {
                 // scrollController.jumpTo(0);
-                setState(() {
-                  showSearchList = false;
-                });
-                fetchOrderList('');
+                context.read<OrderPageProvider>().searchValue = '';
+                fetchOrderList();
               },
             ),
           ),
@@ -219,7 +240,7 @@ class _OrderPageState extends State<OrderPage> {
                         _endTime = _time;
                       });
                     }
-                  }),
+                  }, placeholder: '请选择结束日期'),
                 ),
                 Container(
                   width: ScreenUtil().setWidth(70),
@@ -237,7 +258,10 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   Widget _buildOrderList() {
-    // List<Order> orderList = context.watch<OrderPageProvider>().orderList;
+    int total = context.watch<OrderPageProvider>().total;
+    List<Order> orderList = context.watch<OrderPageProvider>().orderList;
+
+    bool _loadMore = total < orderList.length;
 
     List<OrderByTime> orderListByTime =
         context.watch<OrderPageProvider>().orderListByTime;
@@ -287,13 +311,15 @@ class _OrderPageState extends State<OrderPage> {
 
     return Expanded(
       child: EasyRefresh(
-        onLoad: () async {
-          await context.read<OrderPageProvider>().loadMoreOrder();
-        },
+        onLoad: _loadMore
+            ? () async {
+                await context.read<OrderPageProvider>().loadMoreOrder();
+              }
+            : null,
         footer: ClassicalFooter(
             bgColor: Colors.white,
             textColor: Colors.black38,
-            noMoreText: '加载完成',
+            noMoreText: '已经到底啦',
             loadReadyText: '上拉加载',
             loadText: '上拉加载更多',
             loadingText: '加载中...',
@@ -382,7 +408,6 @@ class _OrderPageState extends State<OrderPage> {
 
   Widget _buildOrderDetailInfo() {
     var orderDetail = context.watch<OrderPageProvider>().orderDetail;
-    var getOrderStatus = context.read<OrderPageProvider>().getOrderStatus;
 
     if (orderDetail != null) {
       return Container(
@@ -393,7 +418,7 @@ class _OrderPageState extends State<OrderPage> {
             _buildOrderDetailInfoItem(
                 img: 'assets/icon_cashier.png',
                 title: '订单状态',
-                value: getOrderStatus(orderDetail.transFlag),
+                value: OrderPageProvider.getOrderStatus(orderDetail.transFlag),
                 color: Colors.blue),
             _buildOrderDetailInfoItem(
                 img: 'assets/icon_cashier.png',

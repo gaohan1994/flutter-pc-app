@@ -19,6 +19,21 @@ class OrderItem extends StatelessWidget {
     // 点击订单触发请求详情函数
     var onPressedHandle = context.read<OrderPageProvider>().changeSelectedOrder;
 
+    Widget orderTransflagTag = SizedBox.shrink();
+    if (item.transFlag < 0) {
+      orderTransflagTag = ProductTag(
+          name: OrderPageProvider.getOrderStatus(item.transFlag),
+          color: item.transFlag == -1 ? Colors.red : Colors.orange);
+    }
+
+    // 订单退货标记
+    Widget orderRefundTag = SizedBox.shrink();
+    if (item.refundStatus != 0) {
+      orderRefundTag = ProductTag(
+          name: OrderPageProvider.getOrderRefundStatus(item.refundStatus),
+          color: item.refundStatus == 1 ? Colors.blue.shade300 : Colors.blue);
+    }
+
     return InkWell(
       onTap: () {
         onPressedHandle(item);
@@ -53,9 +68,11 @@ class OrderItem extends StatelessWidget {
                         Text(item.orderNo,
                             style: TextStyle(fontSize: ScreenUtil().setSp(12))),
                         Container(
-                          margin: EdgeInsets.only(left: 6),
-                          child: ProductTag(name: '全部退货', color: Colors.orange),
-                        )
+                            margin: EdgeInsets.only(left: 6),
+                            child: orderTransflagTag),
+                        Container(
+                            margin: EdgeInsets.only(left: 6),
+                            child: orderRefundTag)
                       ],
                     ),
                     Container(

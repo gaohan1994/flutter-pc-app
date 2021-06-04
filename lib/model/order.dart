@@ -28,6 +28,8 @@ class Order {
   String orderNo;
   double amt;
   int transFlag;
+
+  // 0 未退货 1 全部退货 2 部分退货
   int refundStatus;
   String createTime;
 
