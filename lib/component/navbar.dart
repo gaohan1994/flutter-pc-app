@@ -46,7 +46,6 @@ class _Navbar extends State<Navbar> {
   void onUserPressed() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     var user = sp.getString('user');
-    print('user: ${user}');
   }
 
   @override

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:pc_app/component/drawer_modal.dart';
 import 'package:pc_app/component/order.dart';
 import 'package:pc_app/component/search.dart';
 import 'package:pc_app/model/order.dart';
@@ -20,6 +22,9 @@ class OrderPage extends StatefulWidget {
 }
 
 class _OrderPageState extends State<OrderPage> {
+  // Scaffold key 用来打开 drawer
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   DateFormat format = DateFormat('yyyy-MM-dd');
 
   // 创建搜索订单单号或者退货单号的 TextEditingController
@@ -91,50 +96,52 @@ class _OrderPageState extends State<OrderPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
+        drawer: _buildRefundDrawer(),
         body: Row(
-      children: [
-        Container(
-          width: 330.w,
-          child: Column(
-            children: [
-              _buildSearchHeader(),
-              _buildOrderList(),
-            ],
-          ),
-        ),
-        const VerticalDivider(),
-        Expanded(
-            child: Column(
           children: [
-            _buildOrderDetailInfo(),
-            _buildOrderListItem([
-              {"name": '名称'},
-              {"name": '单价'},
-              {"name": '数量'},
-              {"name": '小计'},
-            ], color: Colors.black12),
-            Expanded(child: _buildOrderListView()),
-            _buildOrderDetailBar(),
-          ],
-        )),
-        const VerticalDivider(),
-        Container(
-          width: 220.w,
-          child: Column(
-            children: [
-              Container(
-                margin: EdgeInsets.only(top: 8),
-                child: _buildOrderPriceCard(),
+            Container(
+              width: 330.w,
+              child: Column(
+                children: [
+                  _buildSearchHeader(),
+                  _buildOrderList(),
+                ],
               ),
-              Container(
-                padding: EdgeInsets.only(left: 11, right: 11),
-                child: _buildOrderPrice(),
-              )
-            ],
-          ),
-        )
-      ],
-    ));
+            ),
+            const VerticalDivider(),
+            Expanded(
+                child: Column(
+              children: [
+                _buildOrderDetailInfo(),
+                _buildOrderListItem([
+                  {"name": '名称'},
+                  {"name": '单价'},
+                  {"name": '数量'},
+                  {"name": '小计'},
+                ], color: Colors.black12),
+                Expanded(child: _buildOrderListView()),
+                _buildOrderDetailBar(),
+              ],
+            )),
+            const VerticalDivider(),
+            Container(
+              width: 220.w,
+              child: Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(top: 8),
+                    child: _buildOrderPriceCard(),
+                  ),
+                  Container(
+                    padding: EdgeInsets.only(left: 11, right: 11),
+                    child: _buildOrderPrice(),
+                  )
+                ],
+              ),
+            )
+          ],
+        ));
   }
 
   Widget _buildColorItem({title, detail, color, padding}) {
@@ -305,7 +312,7 @@ class _OrderPageState extends State<OrderPage> {
         onTap: () async {
           await context.read<HomePageProvider>().getProducts();
         },
-        child: const Text('暂无商品'),
+        child: _buildEemptyView(emptyText: '暂无订单数据'),
       );
     }
 
@@ -374,34 +381,42 @@ class _OrderPageState extends State<OrderPage> {
     );
   }
 
-  Widget _buildOrderDetailInfoItem({img, title, value, color}) {
-    return Container(
-      width: 180.w,
-      margin: EdgeInsets.only(bottom: 11),
-      child: Row(
-        children: [
-          Container(
-            margin: EdgeInsets.only(right: 5),
-            child: Image(
-              image: AssetImage(img),
-              width: 13.w,
-              height: 13.w,
+  Widget _buildOrderDetailInfoItem({img, title, value, color, onPressed}) {
+    return InkWell(
+      onTap: () => {
+        if (onPressed != null) {onPressed()}
+      },
+      child: Container(
+        width: 180.w,
+        padding: EdgeInsets.fromLTRB(0, 6, 0, 6),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              margin: EdgeInsets.only(right: 5),
+              child: Image(
+                image: AssetImage(img),
+                width: 13.w,
+                height: 13.w,
+              ),
             ),
-          ),
-          Expanded(
-              child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(title,
-                  style: TextStyle(
-                      fontSize: ScreenUtil().setSp(11), color: Colors.black45)),
-              Text(value,
-                  style: TextStyle(
-                      fontSize: ScreenUtil().setSp(11),
-                      color: color != null ? color : Colors.black45))
-            ],
-          )),
-        ],
+            Expanded(
+                child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(title,
+                    style: TextStyle(
+                        fontSize: ScreenUtil().setSp(11),
+                        color: Colors.black45)),
+                Text(value,
+                    style: TextStyle(
+                        fontSize: ScreenUtil().setSp(11),
+                        color: color != null ? color : Colors.black45))
+              ],
+            )),
+          ],
+        ),
       ),
     );
   }
@@ -427,7 +442,10 @@ class _OrderPageState extends State<OrderPage> {
             _buildOrderDetailInfoItem(
                 img: 'assets/icon_cashier.png',
                 title: '单号',
-                value: orderDetail.orderNo),
+                value: orderDetail.orderNo,
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: orderDetail.orderNo));
+                }),
             _buildOrderDetailInfoItem(
                 img: 'assets/icon_cashier.png',
                 title: '时间',
@@ -444,7 +462,7 @@ class _OrderPageState extends State<OrderPage> {
     final buttonStyle = OutlinedButton.styleFrom(
         side: const BorderSide(width: 1, color: Colors.blue));
     return Padding(
-        padding: EdgeInsets.all(6),
+        padding: EdgeInsets.fromLTRB(6, 6, 6, 30),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -454,7 +472,7 @@ class _OrderPageState extends State<OrderPage> {
               margin: const EdgeInsets.only(right: 6),
               child: OutlinedButton(
                 style: buttonStyle,
-                onPressed: () => {},
+                onPressed: () => {_scaffoldKey.currentState!.openDrawer()},
                 child: const Text('退货'),
               ),
             )
@@ -501,7 +519,7 @@ class _OrderPageState extends State<OrderPage> {
             ]);
           });
     } else {
-      return Text('null');
+      return _buildEemptyView();
     }
   }
 
@@ -593,5 +611,35 @@ class _OrderPageState extends State<OrderPage> {
     } else {
       return Text('');
     }
+  }
+
+  // 退货 弹窗
+  Widget _buildRefundDrawer() {
+    return DrawerModal(
+      buttons: [DrawerButton('退货')],
+      title: '退货',
+      child: ListView(
+        children: [Text('data')],
+      ),
+    );
+  }
+
+  Widget _buildEemptyView({emptyText = ''}) {
+    return Center(
+      child: Column(
+        children: [
+          Image(
+            width: 190.w,
+            height: 190.w,
+            image: AssetImage('assets/img_no_goods.png'),
+          ),
+          emptyText != null
+              ? Text(emptyText,
+                  style: TextStyle(
+                      color: Colors.black45, fontSize: ScreenUtil().setSp(12)))
+              : SizedBox.shrink()
+        ],
+      ),
+    );
   }
 }
