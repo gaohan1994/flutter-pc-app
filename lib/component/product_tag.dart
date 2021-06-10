@@ -32,7 +32,7 @@ class _ProductTag extends State<ProductTag> {
     }
 
     return Container(
-      margin: const EdgeInsets.only(right: 4),
+      margin: const EdgeInsets.only(left: 4, right: 4),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5.0),
         color: tagColor,

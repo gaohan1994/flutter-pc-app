@@ -7,7 +7,8 @@
 import 'package:flutter/material.dart';
 import 'package:pc_app/common/global.dart';
 import 'package:pc_app/component/navbar.dart';
-import 'package:pc_app/model/route.dart';
+import 'package:pc_app/provider/route.dart';
+import 'package:pc_app/pages/member.dart';
 import 'package:pc_app/pages/sign/login.dart';
 import 'package:pc_app/service/service_url.dart';
 import 'package:provider/provider.dart';
@@ -29,6 +30,7 @@ class _IndexPageState extends State<IndexPage> {
   final List<Widget> bodyList = [
     HomePage(),
     OrderPage(),
+    MemberPage(),
   ];
   @override
   Widget build(BuildContext context) {

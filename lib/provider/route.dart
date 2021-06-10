@@ -8,12 +8,20 @@
 import 'package:flutter/material.dart';
 
 class RouteProvider extends ChangeNotifier {
-  int _index = 1;
+  int _index = 2;
 
   int get index => _index;
 
+  // 会员tab页的index
+  int memberDetailIndex = 0;
+
   void changeIndex(value) {
     _index = value;
+    notifyListeners();
+  }
+
+  void changeMemberDetailIndex(int value) {
+    memberDetailIndex = value;
     notifyListeners();
   }
 }

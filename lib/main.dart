@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pc_app/provider/global.dart';
 import 'package:pc_app/provider/home.dart';
+import 'package:pc_app/provider/member.dart';
 import 'package:pc_app/provider/order.dart';
 import 'package:pc_app/provider/report.dart';
+import 'package:pc_app/provider/route.dart';
 import 'package:pc_app/route/application.dart';
 import 'package:fluro/fluro.dart';
 import './route/routes.dart';
 import './route/application.dart';
 import './pages/index.dart';
-import './model/route.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:oktoast/oktoast.dart';
@@ -42,6 +43,8 @@ class MyApp extends StatelessWidget {
     var reportProvider = ReportProvider();
     // 全局 provider
     var profileChangeNotifier = ProfileChangeNotifier();
+    // 会员 provider
+    var memberProvider = MemberProvider();
 
     // 初始化screenUtil
     return ScreenUtilInit(
@@ -57,7 +60,8 @@ class MyApp extends StatelessWidget {
               create: (_) => orderPageProvider,
             ),
             ChangeNotifierProvider(create: (_) => reportProvider),
-            ChangeNotifierProvider(create: (_) => profileChangeNotifier)
+            ChangeNotifierProvider(create: (_) => profileChangeNotifier),
+            ChangeNotifierProvider(create: (_) => memberProvider),
           ],
               child: MaterialApp(
                   title: '星亿腾',

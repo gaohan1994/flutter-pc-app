@@ -4,8 +4,10 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:pc_app/component/color_item.dart';
 import 'package:pc_app/component/drawer_modal.dart';
-import 'package:pc_app/component/order.dart';
+import 'package:pc_app/component/empty_view.dart';
+import 'package:pc_app/component/list_item.dart';
 import 'package:pc_app/component/search.dart';
 import 'package:pc_app/model/order.dart';
 import 'package:pc_app/provider/home.dart';
@@ -144,27 +146,6 @@ class _OrderPageState extends State<OrderPage> {
         ));
   }
 
-  Widget _buildColorItem({title, detail, color, padding}) {
-    return Expanded(
-        flex: 1,
-        child: Container(
-          margin: EdgeInsets.only(right: 4),
-          padding: padding,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(3),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              title,
-              detail,
-            ],
-          ),
-        ));
-  }
-
   Widget _buildSearchHeader() {
     return Container(
       padding: const EdgeInsets.fromLTRB(8, 10, 8, 10),
@@ -173,39 +154,12 @@ class _OrderPageState extends State<OrderPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildColorItem(
-                  title: Text('今日销售 2 数',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: ScreenUtil().setSp(10))),
-                  detail: Text(
-                    '￥ 200.00',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  color: Colors.orange,
-                  padding: EdgeInsets.fromLTRB(14, 11, 14, 11)),
-              _buildColorItem(
-                  title: Text('今日销售 2 数',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: ScreenUtil().setSp(10))),
-                  detail: Text(
-                    '￥ 200.00',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  color: Colors.blue,
-                  padding: EdgeInsets.fromLTRB(14, 11, 14, 11)),
-              _buildColorItem(
-                  title: Text('今日销售 2 数',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: ScreenUtil().setSp(10))),
-                  detail: Text(
-                    '￥ 200.00',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  color: Colors.red,
-                  padding: EdgeInsets.fromLTRB(14, 11, 14, 11)),
+              ColorItem(
+                  title: '今日销售 2 数', detail: '￥ 200.00', color: Colors.orange),
+              ColorItem(
+                  title: '今日销售 2 数', detail: '￥ 200.00', color: Colors.red),
+              ColorItem(
+                  title: '今日销售 2 数', detail: '￥ 200.00', color: Colors.blue),
             ],
           ),
           Container(
@@ -312,7 +266,7 @@ class _OrderPageState extends State<OrderPage> {
         onTap: () async {
           await context.read<HomePageProvider>().getProducts();
         },
-        child: _buildEemptyView(emptyText: '暂无订单数据'),
+        child: EmptyView(emptyText: '暂无订单数据'),
       );
     }
 
@@ -519,7 +473,7 @@ class _OrderPageState extends State<OrderPage> {
             ]);
           });
     } else {
-      return _buildEemptyView();
+      return EmptyView();
     }
   }
 
@@ -620,25 +574,6 @@ class _OrderPageState extends State<OrderPage> {
       title: '退货',
       child: ListView(
         children: [Text('data')],
-      ),
-    );
-  }
-
-  Widget _buildEemptyView({emptyText = ''}) {
-    return Center(
-      child: Column(
-        children: [
-          Image(
-            width: 190.w,
-            height: 190.w,
-            image: AssetImage('assets/img_no_goods.png'),
-          ),
-          emptyText != null
-              ? Text(emptyText,
-                  style: TextStyle(
-                      color: Colors.black45, fontSize: ScreenUtil().setSp(12)))
-              : SizedBox.shrink()
-        ],
       ),
     );
   }

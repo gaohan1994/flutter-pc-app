@@ -24,6 +24,8 @@ class DrawerModal extends StatelessWidget {
   Widget build(BuildContext context) {
     double _drawerWidth = ScreenUtil().setWidth(540);
 
+    // Drawer
+
     return Semantics(
       scopesRoute: true,
       namesRoute: true,

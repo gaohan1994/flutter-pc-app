@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SearchCompoennt extends StatefulWidget {
-  SearchCompoennt({required this.onPress, required this.onCancel});
+class SearchCompoennt extends StatelessWidget {
+  SearchCompoennt(
+      {required this.onPress,
+      required this.onCancel,
+      this.placeholder = '请输入内容'});
+
+  final String placeholder;
 
   Function onPress;
 
-  Function onCancel;
+  Function? onCancel;
 
   @override
-  State<StatefulWidget> createState() {
-    return _SearchState();
-  }
-}
-
-class _SearchState extends State<SearchCompoennt> {
   // 创建 TextEditngController
   final TextEditingController _controller = TextEditingController();
 
@@ -60,19 +59,13 @@ class _SearchState extends State<SearchCompoennt> {
                           ),
                         ),
                         contentPadding: EdgeInsets.all(0),
-                        hintText: '请输入商品条码或名称',
+                        hintText: placeholder,
                         border: InputBorder.none,
                       )),
                 ),
                 !_searchValueEmpty
                     ? InkWell(
-                        onTap: () => {
-                          _controller.clear(),
-                          if (widget.onCancel != null)
-                            {
-                              widget.onCancel(''),
-                            }
-                        },
+                        onTap: () => {_controller.clear(), onCancel!('')},
                         child: Icon(
                           Icons.close,
                           color: Colors.black,
@@ -88,7 +81,7 @@ class _SearchState extends State<SearchCompoennt> {
               width: ScreenUtil().setWidth(70),
               height: ScreenUtil().setHeight(30),
               child: ElevatedButton(
-                  onPressed: () => {widget.onPress(_controller.value.text)},
+                  onPressed: () => {onPress(_controller.value.text)},
                   child: const Text('搜索')),
             ),
           )

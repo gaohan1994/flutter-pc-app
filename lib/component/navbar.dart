@@ -6,10 +6,8 @@
  */
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pc_app/model/order.dart';
-import 'package:pc_app/model/route.dart';
+import 'package:pc_app/provider/route.dart';
 import 'package:pc_app/provider/global.dart';
-import 'package:pc_app/provider/home.dart';
 import 'package:pc_app/provider/order.dart';
 import 'package:pc_app/route/application.dart';
 import 'package:provider/provider.dart';
