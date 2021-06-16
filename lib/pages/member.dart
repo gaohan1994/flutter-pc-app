@@ -4,6 +4,7 @@ import 'package:pc_app/component/color_item.dart';
 import 'package:pc_app/component/empty_view.dart';
 import 'package:pc_app/component/list_item.dart';
 import 'package:pc_app/component/search.dart';
+import 'package:pc_app/pages/member/member_edit.dart';
 import 'package:pc_app/pages/member_detail.dart';
 import 'package:pc_app/provider/member.dart';
 import 'package:provider/provider.dart';
@@ -42,8 +43,8 @@ class _MemberPage extends State<MemberPage> {
                       Container(
                         margin: const EdgeInsets.only(top: 8),
                         child: SearchCompoennt(
-                          placeholder: '请输入会员卡或手机号',
-                          onPress: (value) {
+                          hintText: '请输入会员卡或手机号',
+                          inputCallback: (value) {
                             context.read<MemberProvider>().searchValue = value;
                             context.read<MemberProvider>().getMemberList();
                           },
@@ -62,7 +63,13 @@ class _MemberPage extends State<MemberPage> {
                   height: 40.w,
                   width: 330.w,
                   child: ElevatedButton(
-                    onPressed: () => {},
+                    onPressed: () => {
+                      showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return MemberEdit(isEdit: false);
+                          })
+                    },
                     child: Text('新增会员'),
                   ),
                 )

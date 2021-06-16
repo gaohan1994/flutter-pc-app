@@ -165,7 +165,7 @@ class _OrderPageState extends State<OrderPage> {
           Container(
             margin: EdgeInsets.only(top: 8),
             child: SearchCompoennt(
-              onPress: (value) {
+              inputCallback: (value) {
                 context.read<OrderPageProvider>().searchValue = value;
                 fetchOrderList();
               },

@@ -1,21 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SearchCompoennt extends StatelessWidget {
+typedef _InputCallBack = void Function(String value);
+
+class SearchCompoennt extends StatefulWidget {
+  final String text;
+  final String hintText;
+  final Function? onCancel;
+  final _InputCallBack? inputCallback;
+
   SearchCompoennt(
-      {required this.onPress,
-      required this.onCancel,
-      this.placeholder = '请输入内容'});
-
-  final String placeholder;
-
-  Function onPress;
-
-  Function? onCancel;
+      {this.text = '',
+      this.hintText = '请输入内容',
+      this.inputCallback,
+      this.onCancel});
 
   @override
+  createState() => _SearchCompoennt();
+}
+
+class _SearchCompoennt extends State<SearchCompoennt> {
   // 创建 TextEditngController
-  final TextEditingController _controller = TextEditingController();
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+    _controller.text = widget.text;
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,13 +78,14 @@ class SearchCompoennt extends StatelessWidget {
                           ),
                         ),
                         contentPadding: EdgeInsets.all(0),
-                        hintText: placeholder,
+                        hintText: widget.hintText,
                         border: InputBorder.none,
                       )),
                 ),
                 !_searchValueEmpty
                     ? InkWell(
-                        onTap: () => {_controller.clear(), onCancel!('')},
+                        onTap: () =>
+                            {_controller.clear(), widget.onCancel!('')},
                         child: Icon(
                           Icons.close,
                           color: Colors.black,
@@ -81,7 +101,10 @@ class SearchCompoennt extends StatelessWidget {
               width: ScreenUtil().setWidth(70),
               height: ScreenUtil().setHeight(30),
               child: ElevatedButton(
-                  onPressed: () => {onPress(_controller.value.text)},
+                  onPressed: () => {
+                        if (widget.inputCallback != null)
+                          {widget.inputCallback!(_controller.text)}
+                      },
                   child: const Text('搜索')),
             ),
           )

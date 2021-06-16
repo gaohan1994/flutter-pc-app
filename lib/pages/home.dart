@@ -135,7 +135,7 @@ class _HomePageState extends State<HomePage> {
     return Container(
       padding: EdgeInsets.all(4),
       child: SearchCompoennt(
-        onPress: (value) {
+        inputCallback: (value) {
           setState(() {
             showSearchList = true;
           });

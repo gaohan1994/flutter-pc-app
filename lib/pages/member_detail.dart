@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pc_app/component/product_tag.dart';
 import 'package:pc_app/model/member.dart';
 import 'package:pc_app/pages/member/member_content.dart';
+import 'package:pc_app/pages/member/member_edit.dart';
 import 'package:pc_app/pages/member/member_tab.dart';
 import 'package:pc_app/provider/member.dart';
 import 'package:pc_app/provider/route.dart';
@@ -33,7 +34,7 @@ class MemberDetailPage extends StatelessWidget {
           )),
           Container(
             margin: EdgeInsets.only(bottom: 20),
-            child: _buildButtons(),
+            child: _buildButtons(context),
           ),
         ],
       ),
@@ -114,7 +115,7 @@ class MemberDetailPage extends StatelessWidget {
         ));
   }
 
-  Widget _buildButtons() {
+  Widget _buildButtons(context) {
     final buttonStyle = OutlinedButton.styleFrom(
         side: const BorderSide(width: 1, color: Colors.blue));
     return Row(
@@ -126,7 +127,13 @@ class MemberDetailPage extends StatelessWidget {
           margin: const EdgeInsets.only(right: 6),
           child: OutlinedButton(
             style: buttonStyle,
-            onPressed: () => {},
+            onPressed: () => {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return MemberEdit(isEdit: true);
+                  })
+            },
             child: const Text('编辑'),
           ),
         ),
