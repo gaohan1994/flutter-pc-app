@@ -82,7 +82,6 @@ class MemberProvider extends ChangeNotifier {
   Future getMemberDetail(int id) async {
     var result = await fetchMemberDetail(id: id);
     var resultMap = json.decode(result.toString());
-    print('resultMap: ${resultMap}');
     var data = MemberDetail.fromJson(resultMap['data']);
 
     memberDetail = data;

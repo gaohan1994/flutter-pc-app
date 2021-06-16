@@ -29,9 +29,9 @@ class _MemberPage extends State<MemberPage> {
   void onFilterClick(value) {
     var filterWay = context.read<MemberProvider>().filterWay;
     var filterBy = context.read<MemberProvider>().filterBy;
-    print('value: ${value}');
-    print('filterWay: ${filterWay}');
-    print('value == filterWay: ${value == filterWay}');
+    // print('value: ${value}');
+    // print('filterWay: ${filterWay}');
+    // print('value == filterWay: ${value == filterWay}');
     if (value == filterWay) {
       // 如果已经是当前选中的分类则翻转排序方式
       context
