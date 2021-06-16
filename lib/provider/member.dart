@@ -15,6 +15,22 @@ class MemberProvider extends ChangeNotifier {
   // 搜索的值
   String searchValue = '';
 
+  // 排序方式
+  String filterWay = 'totalAmount';
+  void setFilterWay(way) {
+    filterWay = way;
+    getMemberList();
+    notifyListeners();
+  }
+
+  // 排序规则
+  String filterBy = 'desc';
+  void setFilterBy(by) {
+    filterBy = by;
+    getMemberList();
+    notifyListeners();
+  }
+
   // 列表
   List<Member> memberList = [];
 
@@ -36,6 +52,7 @@ class MemberProvider extends ChangeNotifier {
     var params = {
       "pageNum": 1,
       "pageSize": "${pageSize}",
+      // "orderByColumn": "${filterWay} ${filterBy}"
     };
 
     if (searchValue.isNotEmpty) {

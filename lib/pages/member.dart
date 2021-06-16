@@ -26,6 +26,24 @@ class _MemberPage extends State<MemberPage> {
     });
   }
 
+  void onFilterClick(value) {
+    var filterWay = context.read<MemberProvider>().filterWay;
+    var filterBy = context.read<MemberProvider>().filterBy;
+    print('value: ${value}');
+    print('filterWay: ${filterWay}');
+    print('value == filterWay: ${value == filterWay}');
+    if (value == filterWay) {
+      // 如果已经是当前选中的分类则翻转排序方式
+      context
+          .read<MemberProvider>()
+          .setFilterBy(filterBy == 'desc' ? 'asc' : 'desc');
+    } else {
+      // 如果不是选中状态则选中
+      context.read<MemberProvider>().setFilterWay(value);
+      context.read<MemberProvider>().setFilterBy('desc');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,11 +67,14 @@ class _MemberPage extends State<MemberPage> {
                             context.read<MemberProvider>().getMemberList();
                           },
                           onCancel: (value) {
-                            // scrollController.jumpTo(0);
                             context.read<MemberProvider>().searchValue = '';
                             context.read<MemberProvider>().getMemberList();
                           },
                         ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 8.w),
+                        child: _buildFilter(),
                       )
                     ],
                   ),
@@ -113,5 +134,62 @@ class _MemberPage extends State<MemberPage> {
     } else {
       return EmptyView(emptyText: '暂无数据');
     }
+  }
+
+  Widget _buildFilter() {
+    return Row(
+      children: [
+        _buildFilterItem('累计消费', 'totalAmount'),
+        _buildFilterItem('上次消费时间', 'lastPayTime'),
+        _buildFilterItem('注册时间', 'createTime'),
+      ],
+    );
+  }
+
+  Widget _buildFilterItem(title, value) {
+    var filterWay = context.watch<MemberProvider>().filterWay;
+    var filterBy = context.watch<MemberProvider>().filterBy;
+    bool selected = value == filterWay;
+
+    Widget _current = selected
+        ? filterBy == 'desc'
+            ? Image(
+                width: 7.w,
+                height: 10.w,
+                image: AssetImage('assets/icon_jiangxu.png'))
+            : Image(
+                width: 7.w,
+                height: 10.w,
+                image: AssetImage('assets/icon_paixu.png'))
+        : Image(
+            width: 7.w,
+            height: 10.w,
+            image: AssetImage('assets/icon_moren_paixu.png'));
+
+    return Expanded(
+        child: InkWell(
+      onTap: () {
+        onFilterClick(value);
+      },
+      child: Container(
+        height: 25.w,
+        decoration: BoxDecoration(
+            border: Border.all(
+                width: 1, color: selected ? Colors.blue : Colors.black12)),
+        alignment: Alignment.center,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(title,
+                style: TextStyle(color: selected ? Colors.blue : Colors.black)),
+            Container(
+              margin: EdgeInsets.only(left: 10.w),
+              child: _current,
+            ),
+          ],
+        ),
+      ),
+    ));
   }
 }
