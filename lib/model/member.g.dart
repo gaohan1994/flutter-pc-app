@@ -6,7 +6,7 @@ part of 'member.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-MemberStatistic _$MemberStatisticFromJson(Map<String, dynamic> json) {
+MemberStatistic _$MemberStatisticFromJson(Map json) {
   return MemberStatistic(
     json['addMemberNum'] as int,
     json['totalMemberNum'] as int,
@@ -19,10 +19,10 @@ Map<String, dynamic> _$MemberStatisticToJson(MemberStatistic instance) =>
       'totalMemberNum': instance.totalMemberNum,
     };
 
-MemberList _$MemberListFromJson(Map<String, dynamic> json) {
+MemberList _$MemberListFromJson(Map json) {
   return MemberList(
     (json['rows'] as List<dynamic>)
-        .map((e) => Member.fromJson(e as Map<String, dynamic>))
+        .map((e) => Member.fromJson(Map<String, dynamic>.from(e as Map)))
         .toList(),
     json['total'] as int,
   );
@@ -31,10 +31,10 @@ MemberList _$MemberListFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$MemberListToJson(MemberList instance) =>
     <String, dynamic>{
       'total': instance.total,
-      'rows': instance.rows,
+      'rows': instance.rows.map((e) => e.toJson()).toList(),
     };
 
-Member _$MemberFromJson(Map<String, dynamic> json) {
+Member _$MemberFromJson(Map json) {
   return Member(
     json['avatar'] as String?,
     json['cardNo'] as String?,
@@ -49,20 +49,29 @@ Member _$MemberFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$MemberToJson(Member instance) => <String, dynamic>{
-      'avatar': instance.avatar,
-      'cardNo': instance.cardNo,
-      'createTime': instance.createTime,
-      'lastPayTime': instance.lastPayTime,
-      'levelName': instance.levelName,
-      'phone': instance.phone,
-      'username': instance.username,
-      'id': instance.id,
-      'totalAmount': instance.totalAmount,
-      'totalTimes': instance.totalTimes,
-    };
+Map<String, dynamic> _$MemberToJson(Member instance) {
+  final val = <String, dynamic>{};
 
-MemberDetail _$MemberDetailFromJson(Map<String, dynamic> json) {
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('avatar', instance.avatar);
+  writeNotNull('cardNo', instance.cardNo);
+  writeNotNull('createTime', instance.createTime);
+  writeNotNull('lastPayTime', instance.lastPayTime);
+  writeNotNull('levelName', instance.levelName);
+  val['phone'] = instance.phone;
+  val['username'] = instance.username;
+  val['id'] = instance.id;
+  val['totalAmount'] = instance.totalAmount;
+  writeNotNull('totalTimes', instance.totalTimes);
+  return val;
+}
+
+MemberDetail _$MemberDetailFromJson(Map json) {
   return MemberDetail()
     ..avatar = json['avatar'] as String?
     ..cardNo = json['cardNo'] as String?
@@ -87,40 +96,46 @@ MemberDetail _$MemberDetailFromJson(Map<String, dynamic> json) {
     ..memberDiscount = (json['memberDiscount'] as num?)?.toDouble()
     ..obtainMoney = (json['obtainMoney'] as num?)?.toDouble()
     ..obtainPoints = (json['obtainPoints'] as num?)?.toDouble()
-    ..preferenceVo = (json['preferenceVo'] as List<dynamic>?)
-        ?.map((e) => Preference.fromJson(e as Map<String, dynamic>))
-        .toList();
+    ..preferenceVo = json['preferenceVo'] as List<dynamic>?;
 }
 
-Map<String, dynamic> _$MemberDetailToJson(MemberDetail instance) =>
-    <String, dynamic>{
-      'avatar': instance.avatar,
-      'cardNo': instance.cardNo,
-      'createTime': instance.createTime,
-      'lastPayTime': instance.lastPayTime,
-      'levelName': instance.levelName,
-      'phone': instance.phone,
-      'username': instance.username,
-      'id': instance.id,
-      'totalAmount': instance.totalAmount,
-      'totalTimes': instance.totalTimes,
-      'sex': instance.sex,
-      'birthDate': instance.birthDate,
-      'merchantName': instance.merchantName,
-      'enableMemberPrice': instance.enableMemberPrice,
-      'status': instance.status,
-      'merchantId': instance.merchantId,
-      'points': instance.points,
-      'overage': instance.overage,
-      'accumulativePoints': instance.accumulativePoints,
-      'accumulativeMoney': instance.accumulativeMoney,
-      'memberDiscount': instance.memberDiscount,
-      'obtainMoney': instance.obtainMoney,
-      'obtainPoints': instance.obtainPoints,
-      'preferenceVo': instance.preferenceVo,
-    };
+Map<String, dynamic> _$MemberDetailToJson(MemberDetail instance) {
+  final val = <String, dynamic>{};
 
-Preference _$PreferenceFromJson(Map<String, dynamic> json) {
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('avatar', instance.avatar);
+  writeNotNull('cardNo', instance.cardNo);
+  writeNotNull('createTime', instance.createTime);
+  writeNotNull('lastPayTime', instance.lastPayTime);
+  writeNotNull('levelName', instance.levelName);
+  val['phone'] = instance.phone;
+  val['username'] = instance.username;
+  val['id'] = instance.id;
+  val['totalAmount'] = instance.totalAmount;
+  writeNotNull('totalTimes', instance.totalTimes);
+  writeNotNull('sex', instance.sex);
+  writeNotNull('birthDate', instance.birthDate);
+  val['merchantName'] = instance.merchantName;
+  writeNotNull('enableMemberPrice', instance.enableMemberPrice);
+  writeNotNull('status', instance.status);
+  writeNotNull('merchantId', instance.merchantId);
+  writeNotNull('points', instance.points);
+  writeNotNull('overage', instance.overage);
+  writeNotNull('accumulativePoints', instance.accumulativePoints);
+  writeNotNull('accumulativeMoney', instance.accumulativeMoney);
+  writeNotNull('memberDiscount', instance.memberDiscount);
+  writeNotNull('obtainMoney', instance.obtainMoney);
+  writeNotNull('obtainPoints', instance.obtainPoints);
+  writeNotNull('preferenceVo', instance.preferenceVo);
+  return val;
+}
+
+Preference _$PreferenceFromJson(Map json) {
   return Preference(
     json['purchaseNum'] as int,
     json['purchaseTotalNum'] as int,

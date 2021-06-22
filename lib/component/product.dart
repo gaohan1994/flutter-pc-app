@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pc_app/model/product.dart';
+import 'package:pc_app/provider/cart.dart';
+import 'package:provider/provider.dart';
 
 enum CartProductDialogMethod {
   Cancel,
@@ -8,8 +10,9 @@ enum CartProductDialogMethod {
 }
 
 class Product extends StatefulWidget {
-  Product({required this.item});
+  Product({required this.item, this.type = CartType.Home});
 
+  CartType type;
   ProductInfo item;
 
   @override
@@ -35,7 +38,7 @@ class _ProductState extends State<Product> {
   String _remark = '';
 
   void onProductClick() {
-    openCartProductDialog(widget.item.name);
+    context.read<CartProvider>().addProduct(product: widget.item);
   }
 
   @override

@@ -114,3 +114,169 @@ class OrderProductListItem {
 
   toJson() => _$OrderProductListItemToJson(this);
 }
+
+@JsonSerializable()
+class CashierOrder {
+  CashierOrder(this.flag, this.order, this.productInfoList);
+  bool flag;
+  CashierOrderInfo order;
+  List<CashierOrderProductInfo> productInfoList;
+
+  factory CashierOrder.fromJson(Map<String, dynamic> json) =>
+      _$CashierOrderFromJson(json);
+
+  toJson() => _$CashierOrderToJson(this);
+}
+
+@JsonSerializable()
+class CashierOrderInfo {
+  CashierOrderInfo({
+    required this.amt,
+    required this.orderSource,
+    required this.payType,
+    required this.totalNum,
+    this.couponDiscount,
+    this.eraseDiscount,
+    this.fullDiscount,
+    this.memberId,
+    this.merchantId,
+    this.originalAmt,
+    this.pointDiscount,
+    this.points,
+    this.priceDiscount,
+    this.productDiscount,
+    this.couponList,
+    this.remark,
+    this.terminalSn,
+  });
+
+  double amt;
+  int orderSource;
+  int payType;
+  double totalNum;
+  double? couponDiscount;
+  double? eraseDiscount;
+  double? fullDiscount;
+  int? memberId;
+  int? merchantId;
+  double? originalAmt;
+  double? pointDiscount;
+  int? points;
+  double? priceDiscount;
+  double? productDiscount;
+  List? couponList;
+  String? remark;
+  String? terminalSn;
+
+  factory CashierOrderInfo.fromJson(Map<String, dynamic> json) =>
+      _$CashierOrderInfoFromJson(json);
+
+  toJson() => _$CashierOrderInfoToJson(this);
+}
+
+@JsonSerializable()
+class CashierOrderProductInfo {
+  CashierOrderProductInfo({
+    required this.sellNum,
+    this.pointDiscount,
+    this.priceChangeFlag,
+    this.productId,
+    this.productName,
+    this.remark,
+    this.unitPrice,
+  });
+
+  double sellNum;
+  double? pointDiscount;
+  bool? priceChangeFlag;
+  int? productId;
+  String? productName;
+  String? remark;
+  double? unitPrice;
+
+  factory CashierOrderProductInfo.fromJson(Map<String, dynamic> json) =>
+      _$CashierOrderProductInfoFromJson(json);
+
+  toJson() => _$CashierOrderProductInfoToJson(this);
+}
+
+@JsonSerializable()
+class CashierConfirm {
+  CashierConfirm({
+    required this.orderNo,
+    required this.payType,
+    required this.thirdPartFlag,
+    required this.transFlag,
+    this.isCombined,
+    this.transaction,
+  });
+  String orderNo;
+  int payType;
+  int thirdPartFlag;
+  int transFlag;
+  bool? isCombined;
+  CashierConfirmTransaction? transaction;
+
+  factory CashierConfirm.fromJson(Map<String, dynamic> json) =>
+      _$CashierConfirmFromJson(json);
+
+  toJson() => _$CashierConfirmToJson(this);
+}
+
+@JsonSerializable()
+class CashierConfirmTransaction {
+  CashierConfirmTransaction({
+    required this.amt,
+    required this.orderNo,
+    required this.originAmount,
+    required this.payType,
+    required this.terminalSn,
+    required this.transactionStatus,
+    required this.transNo,
+    this.authCode,
+    this.oldAmount,
+    this.batchNo,
+    this.cardNo,
+    this.cardinPutMethod,
+    this.merchantName,
+    this.merchantOrderNo,
+    this.operatorId,
+    this.refNo,
+    this.remark,
+    this.scanOrderId,
+    this.traceNo,
+    this.transDate,
+    this.transTime,
+    this.transType,
+    this.unionNo,
+  });
+
+  double amt;
+  String orderNo;
+  double originAmount;
+  int payType;
+  String terminalSn;
+  int transactionStatus;
+  String transNo;
+  String? authCode;
+  double? oldAmount;
+  String? batchNo;
+  String? cardNo;
+  String? cardinPutMethod;
+  String? merchantName;
+  String? merchantOrderNo;
+  String? operatorId;
+  String? refNo;
+  String? remark;
+  String? scanOrderId;
+  String? traceNo;
+  String? transDate;
+  String? transTime;
+  String? transType;
+  String? unionNo;
+
+  factory CashierConfirmTransaction.fromJson(Map<String, dynamic> json) =>
+      _$CashierConfirmTransactionFromJson(json);
+
+  toJson() => _$CashierConfirmTransactionToJson(this);
+}

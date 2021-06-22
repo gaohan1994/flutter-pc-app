@@ -49,6 +49,7 @@ class GhFormInput extends StatefulWidget {
   final bool hiddenLine; //隐藏底部横线
   final bool topAlign; //左侧标题顶部对齐，默认居中
   final Color bgColor; //背景颜色，默认白色
+  final TextEditingController? controller;
 
   const GhFormInput({
     this.title: '',
@@ -76,6 +77,7 @@ class GhFormInput extends StatefulWidget {
     this.hiddenLine = false,
     this.topAlign = false,
     this.bgColor = _bgColor,
+    this.controller = null,
   });
 
   @override
@@ -147,6 +149,7 @@ class _GhFormInputCellState extends State<GhFormInput> {
                               hintTextStyle: widget.hintTextStyle,
                               textAlign: widget.textAlign,
                               border: widget.border,
+                              controller: widget.controller,
                             )),
                   widget.rightWidget != null
                       ? widget.rightWidget!

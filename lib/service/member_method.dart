@@ -28,3 +28,9 @@ Future getRandomCaroNo() async {
   return requestData('${serviceUrl}/api/memberInfo/getRandomCaroNo',
       method: 'get');
 }
+
+Future memberDetailByPreciseInfo({dynamic identity}) async {
+  return requestData(
+      '${serviceUrl}/api/memberInfo/detailByPreciseInfo/$identity',
+      method: 'get');
+}

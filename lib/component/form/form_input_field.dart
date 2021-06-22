@@ -16,6 +16,7 @@ typedef _InputCallBack = void Function(String value);
 
 class GHTextField extends StatefulWidget {
   final String text;
+
   final String hintText;
   final TextInputType keyboardType; //键盘类型，默认文字
   final Widget? leftWidget; //左侧widget ，默认隐藏
@@ -30,6 +31,7 @@ class GHTextField extends StatefulWidget {
   final TextStyle hintTextStyle;
   final TextAlign textAlign; //对齐方式，默认左对齐
   final InputBorder border; //边框样式，默认无边框
+  final TextEditingController? controller;
 
   GHTextField({
     // Key key,
@@ -48,6 +50,7 @@ class GHTextField extends StatefulWidget {
     this.hintTextStyle = _hintTextStyle,
     this.textAlign = TextAlign.left,
     this.border = InputBorder.none, //去掉下划线
+    this.controller,
   });
 
   @override
@@ -62,8 +65,12 @@ class _JhTextFieldState extends State<GHTextField> {
     // TODO: implement initState
     super.initState();
 
-    _textController = TextEditingController();
-    _textController.text = widget.text;
+    if (widget.controller != null) {
+      _textController = widget.controller!;
+    } else {
+      _textController = TextEditingController();
+      _textController.text = widget.text;
+    }
   }
 
   @override
@@ -80,12 +87,11 @@ class _JhTextFieldState extends State<GHTextField> {
       keyboardType: widget.keyboardType,
       style: widget.textStyle,
       textAlign: widget.textAlign,
-      minLines: widget.maxLines != null ? widget.maxLines : 1,
-      maxLines: widget.maxLines != null ? widget.maxLines : _maxLines,
+      minLines: widget.maxLines ?? 1,
+      maxLines: widget.maxLines ?? _maxLines,
       maxLength: widget.showMaxLength == true ? widget.maxLength : null,
-      inputFormatters: widget.inputFormatters != null
-          ? widget.inputFormatters
-          : [LengthLimitingTextInputFormatter(widget.maxLength)],
+      inputFormatters: widget.inputFormatters ??
+          [LengthLimitingTextInputFormatter(widget.maxLength)],
       decoration: InputDecoration(
           prefixIcon: widget.leftWidget,
           suffixIcon: widget.rightWidget,
@@ -93,8 +99,8 @@ class _JhTextFieldState extends State<GHTextField> {
           hintStyle: widget.hintTextStyle,
           isDense: true,
           contentPadding: widget.border != InputBorder.none
-              ? EdgeInsets.fromLTRB(12, 12, 5, 12)
-              : EdgeInsets.fromLTRB(0, 8, 5, 8),
+              ? const EdgeInsets.fromLTRB(12, 12, 5, 12)
+              : const EdgeInsets.fromLTRB(0, 8, 5, 8),
           border: widget.border),
       onChanged: (value) {
         if (widget.inputCallBack != null) {

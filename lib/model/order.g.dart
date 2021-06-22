@@ -6,10 +6,10 @@ part of 'order.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-OrderList _$OrderListFromJson(Map<String, dynamic> json) {
+OrderList _$OrderListFromJson(Map json) {
   return OrderList(
     (json['rows'] as List<dynamic>)
-        .map((e) => Order.fromJson(e as Map<String, dynamic>))
+        .map((e) => Order.fromJson(Map<String, dynamic>.from(e as Map)))
         .toList(),
     json['total'] as int,
   );
@@ -17,10 +17,10 @@ OrderList _$OrderListFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$OrderListToJson(OrderList instance) => <String, dynamic>{
       'total': instance.total,
-      'rows': instance.rows,
+      'rows': instance.rows.map((e) => e.toJson()).toList(),
     };
 
-Order _$OrderFromJson(Map<String, dynamic> json) {
+Order _$OrderFromJson(Map json) {
   return Order(
     json['orderNo'] as String,
     (json['amt'] as num).toDouble(),
@@ -38,7 +38,7 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
       'createTime': instance.createTime,
     };
 
-OrderDetail _$OrderDetailFromJson(Map<String, dynamic> json) {
+OrderDetail _$OrderDetailFromJson(Map json) {
   return OrderDetail(
     json['orderNo'] as String,
     (json['amt'] as num).toDouble(),
@@ -54,7 +54,8 @@ OrderDetail _$OrderDetailFromJson(Map<String, dynamic> json) {
     json['cashierName'] as String,
     json['createTime'] as String,
     (json['productList'] as List<dynamic>)
-        .map((e) => OrderProductListItem.fromJson(e as Map<String, dynamic>))
+        .map((e) =>
+            OrderProductListItem.fromJson(Map<String, dynamic>.from(e as Map)))
         .toList(),
   );
 }
@@ -74,10 +75,10 @@ Map<String, dynamic> _$OrderDetailToJson(OrderDetail instance) =>
       'pointDiscount': instance.pointDiscount,
       'cashierName': instance.cashierName,
       'createTime': instance.createTime,
-      'productList': instance.productList,
+      'productList': instance.productList.map((e) => e.toJson()).toList(),
     };
 
-OrderProductListItem _$OrderProductListItemFromJson(Map<String, dynamic> json) {
+OrderProductListItem _$OrderProductListItemFromJson(Map json) {
   return OrderProductListItem(
     json['productName'] as String,
     json['canRefund'] as bool,
@@ -104,3 +105,205 @@ Map<String, dynamic> _$OrderProductListItemToJson(
       'amt': instance.amt,
       'totalAmount': instance.totalAmount,
     };
+
+CashierOrder _$CashierOrderFromJson(Map json) {
+  return CashierOrder(
+    json['flag'] as bool,
+    CashierOrderInfo.fromJson(Map<String, dynamic>.from(json['order'] as Map)),
+    (json['productInfoList'] as List<dynamic>)
+        .map((e) => CashierOrderProductInfo.fromJson(
+            Map<String, dynamic>.from(e as Map)))
+        .toList(),
+  );
+}
+
+Map<String, dynamic> _$CashierOrderToJson(CashierOrder instance) =>
+    <String, dynamic>{
+      'flag': instance.flag,
+      'order': instance.order.toJson(),
+      'productInfoList':
+          instance.productInfoList.map((e) => e.toJson()).toList(),
+    };
+
+CashierOrderInfo _$CashierOrderInfoFromJson(Map json) {
+  return CashierOrderInfo(
+    amt: (json['amt'] as num).toDouble(),
+    orderSource: json['orderSource'] as int,
+    payType: json['payType'] as int,
+    totalNum: (json['totalNum'] as num).toDouble(),
+    couponDiscount: (json['couponDiscount'] as num?)?.toDouble(),
+    eraseDiscount: (json['eraseDiscount'] as num?)?.toDouble(),
+    fullDiscount: (json['fullDiscount'] as num?)?.toDouble(),
+    memberId: json['memberId'] as int?,
+    merchantId: json['merchantId'] as int?,
+    originalAmt: (json['originalAmt'] as num?)?.toDouble(),
+    pointDiscount: (json['pointDiscount'] as num?)?.toDouble(),
+    points: json['points'] as int?,
+    priceDiscount: (json['priceDiscount'] as num?)?.toDouble(),
+    productDiscount: (json['productDiscount'] as num?)?.toDouble(),
+    couponList: json['couponList'] as List<dynamic>?,
+    remark: json['remark'] as String?,
+    terminalSn: json['terminalSn'] as String?,
+  );
+}
+
+Map<String, dynamic> _$CashierOrderInfoToJson(CashierOrderInfo instance) {
+  final val = <String, dynamic>{
+    'amt': instance.amt,
+    'orderSource': instance.orderSource,
+    'payType': instance.payType,
+    'totalNum': instance.totalNum,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('couponDiscount', instance.couponDiscount);
+  writeNotNull('eraseDiscount', instance.eraseDiscount);
+  writeNotNull('fullDiscount', instance.fullDiscount);
+  writeNotNull('memberId', instance.memberId);
+  writeNotNull('merchantId', instance.merchantId);
+  writeNotNull('originalAmt', instance.originalAmt);
+  writeNotNull('pointDiscount', instance.pointDiscount);
+  writeNotNull('points', instance.points);
+  writeNotNull('priceDiscount', instance.priceDiscount);
+  writeNotNull('productDiscount', instance.productDiscount);
+  writeNotNull('couponList', instance.couponList);
+  writeNotNull('remark', instance.remark);
+  writeNotNull('terminalSn', instance.terminalSn);
+  return val;
+}
+
+CashierOrderProductInfo _$CashierOrderProductInfoFromJson(Map json) {
+  return CashierOrderProductInfo(
+    sellNum: (json['sellNum'] as num).toDouble(),
+    pointDiscount: (json['pointDiscount'] as num?)?.toDouble(),
+    priceChangeFlag: json['priceChangeFlag'] as bool?,
+    productId: json['productId'] as int?,
+    productName: json['productName'] as String?,
+    remark: json['remark'] as String?,
+    unitPrice: (json['unitPrice'] as num?)?.toDouble(),
+  );
+}
+
+Map<String, dynamic> _$CashierOrderProductInfoToJson(
+    CashierOrderProductInfo instance) {
+  final val = <String, dynamic>{
+    'sellNum': instance.sellNum,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('pointDiscount', instance.pointDiscount);
+  writeNotNull('priceChangeFlag', instance.priceChangeFlag);
+  writeNotNull('productId', instance.productId);
+  writeNotNull('productName', instance.productName);
+  writeNotNull('remark', instance.remark);
+  writeNotNull('unitPrice', instance.unitPrice);
+  return val;
+}
+
+CashierConfirm _$CashierConfirmFromJson(Map json) {
+  return CashierConfirm(
+    orderNo: json['orderNo'] as String,
+    payType: json['payType'] as int,
+    thirdPartFlag: json['thirdPartFlag'] as int,
+    transFlag: json['transFlag'] as int,
+    isCombined: json['isCombined'] as bool?,
+    transaction: json['transaction'] == null
+        ? null
+        : CashierConfirmTransaction.fromJson(
+            Map<String, dynamic>.from(json['transaction'] as Map)),
+  );
+}
+
+Map<String, dynamic> _$CashierConfirmToJson(CashierConfirm instance) {
+  final val = <String, dynamic>{
+    'orderNo': instance.orderNo,
+    'payType': instance.payType,
+    'thirdPartFlag': instance.thirdPartFlag,
+    'transFlag': instance.transFlag,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('isCombined', instance.isCombined);
+  writeNotNull('transaction', instance.transaction?.toJson());
+  return val;
+}
+
+CashierConfirmTransaction _$CashierConfirmTransactionFromJson(Map json) {
+  return CashierConfirmTransaction(
+    amt: (json['amt'] as num).toDouble(),
+    orderNo: json['orderNo'] as String,
+    originAmount: (json['originAmount'] as num).toDouble(),
+    payType: json['payType'] as int,
+    terminalSn: json['terminalSn'] as String,
+    transactionStatus: json['transactionStatus'] as int,
+    transNo: json['transNo'] as String,
+    authCode: json['authCode'] as String?,
+    oldAmount: (json['oldAmount'] as num?)?.toDouble(),
+    batchNo: json['batchNo'] as String?,
+    cardNo: json['cardNo'] as String?,
+    cardinPutMethod: json['cardinPutMethod'] as String?,
+    merchantName: json['merchantName'] as String?,
+    merchantOrderNo: json['merchantOrderNo'] as String?,
+    operatorId: json['operatorId'] as String?,
+    refNo: json['refNo'] as String?,
+    remark: json['remark'] as String?,
+    scanOrderId: json['scanOrderId'] as String?,
+    traceNo: json['traceNo'] as String?,
+    transDate: json['transDate'] as String?,
+    transTime: json['transTime'] as String?,
+    transType: json['transType'] as String?,
+    unionNo: json['unionNo'] as String?,
+  );
+}
+
+Map<String, dynamic> _$CashierConfirmTransactionToJson(
+    CashierConfirmTransaction instance) {
+  final val = <String, dynamic>{
+    'amt': instance.amt,
+    'orderNo': instance.orderNo,
+    'originAmount': instance.originAmount,
+    'payType': instance.payType,
+    'terminalSn': instance.terminalSn,
+    'transactionStatus': instance.transactionStatus,
+    'transNo': instance.transNo,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('authCode', instance.authCode);
+  writeNotNull('oldAmount', instance.oldAmount);
+  writeNotNull('batchNo', instance.batchNo);
+  writeNotNull('cardNo', instance.cardNo);
+  writeNotNull('cardinPutMethod', instance.cardinPutMethod);
+  writeNotNull('merchantName', instance.merchantName);
+  writeNotNull('merchantOrderNo', instance.merchantOrderNo);
+  writeNotNull('operatorId', instance.operatorId);
+  writeNotNull('refNo', instance.refNo);
+  writeNotNull('remark', instance.remark);
+  writeNotNull('scanOrderId', instance.scanOrderId);
+  writeNotNull('traceNo', instance.traceNo);
+  writeNotNull('transDate', instance.transDate);
+  writeNotNull('transTime', instance.transTime);
+  writeNotNull('transType', instance.transType);
+  writeNotNull('unionNo', instance.unionNo);
+  return val;
+}

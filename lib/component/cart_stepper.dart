@@ -1,27 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pc_app/model/product.dart';
+import 'package:pc_app/provider/cart.dart';
+import 'package:provider/provider.dart';
 
 class CartStepper extends StatefulWidget {
   CartStepper(
-      {@required this.value, @required this.onRemove, @required this.onAdd});
+      {@required this.value,
+      this.onRemove,
+      this.onAdd,
+      this.type,
+      this.product});
 
-  final int? value;
+  final double? value;
+
+  CartType? type;
 
   // 减少数量
-  final void onRemove;
+  Function? onRemove;
 
   // 增加数量
-  final void onAdd;
+  Function? onAdd;
+
+  ProductInfo? product;
 
   @override
   _StepperState createState() => _StepperState();
 }
 
 class _StepperState extends State<CartStepper> {
-  final fontStyle = TextStyle(
-      // fontSize: ScreenUtil().setSp(12),
-      );
-
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -41,26 +48,42 @@ class _StepperState extends State<CartStepper> {
 
   Widget _buildLeftButton() {
     return InkWell(
-      onTap: () => {},
-      child: const Padding(
+      onTap: () => {
+        if (widget.onRemove != null)
+          {widget.onRemove!()}
+        else if (widget.type != null)
+          {
+            context
+                .read<CartProvider>()
+                .reduceProduct(type: widget.type!, product: widget.product!)
+          }
+      },
+      child: Padding(
         padding: EdgeInsets.only(right: 12),
-        child: Icon(
-          Icons.remove_circle_outline,
-          color: Colors.blue,
-        ),
+        child: Image(
+            width: 18.w, height: 18.w, image: AssetImage('assets/bt_cut.png')),
       ),
     );
   }
 
   Widget _buildRightButton() {
     return InkWell(
-      onTap: () => {},
-      child: const Padding(
+      onTap: () => {
+        if (widget.onRemove != null)
+          {widget.onRemove!()}
+        else if (widget.type != null)
+          {
+            context
+                .read<CartProvider>()
+                .addProduct(type: widget.type!, product: widget.product!)
+          }
+      },
+      child: Padding(
         padding: EdgeInsets.only(left: 12),
-        child: Icon(
-          Icons.control_point,
-          color: Colors.blue,
-        ),
+        child: Image(
+            width: 18.w,
+            height: 18.w,
+            image: AssetImage('assets/bt_increase.png')),
       ),
     );
   }

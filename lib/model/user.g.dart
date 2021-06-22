@@ -6,7 +6,7 @@ part of 'user.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-UserModel _$UserModelFromJson(Map<String, dynamic> json) {
+UserModel _$UserModelFromJson(Map json) {
   return UserModel(
     json['token'] as String,
     json['avatar'] as String,

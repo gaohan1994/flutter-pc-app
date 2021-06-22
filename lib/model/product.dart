@@ -53,6 +53,20 @@ class ProductInfo {
   int? typeId;
   String? typeName;
   String? unit;
+  int? saleType;
+
+  // 数量
+  double? sellNum;
+  // 备注
+  String? remark;
+  // 积分折扣
+  double? pointDiscount;
+  // 改价/无码商品参加满减或优惠券前的价格
+  double? unitPrice;
+  // 改价标识
+  bool? priceChangeFlag;
+  // 商品名称,无码商品需要填写
+  String? productName;
 
   factory ProductInfo.fromJson(Map<String, dynamic> json) =>
       _$ProductInfoFromJson(json);

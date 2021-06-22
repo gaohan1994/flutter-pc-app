@@ -6,7 +6,7 @@ part of 'report.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ReportToday _$ReportTodayFromJson(Map<String, dynamic> json) {
+ReportToday _$ReportTodayFromJson(Map json) {
   return ReportToday(
     json['todayAddMember'] as int,
     json['todaySaleTimes'] as int,

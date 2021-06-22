@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pc_app/component/drawer_modal.dart';
 import 'package:pc_app/component/search.dart';
+import 'package:pc_app/component/slider_type.dart';
 import 'package:pc_app/model/product.dart';
+import 'package:pc_app/pages/cashier_order.dart';
 import 'package:pc_app/provider/home.dart';
 import 'package:provider/provider.dart';
 import '../component/shop_cart.dart';
@@ -62,72 +65,38 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Row(
-      children: [
-        ShopCart(title: '购物车'),
-        Expanded(
-          child: Column(
-            children: [
-              // 搜索功能
-              _buildSearch(),
-              // 构建收银台中间商品部分
-              _buildBody(),
-              // 底部按钮区域
-              const Divider(),
-              _buildButtons(),
-            ],
-          ),
-        ),
-        _buildCategory(),
-      ],
-    ));
-  }
-
-  Widget _buildCategory() {
-    final productsType = context.watch<HomePageProvider>().productsType;
-    return Align(
-      alignment: Alignment.topRight,
-      child: Container(
-          width: ScreenUtil().setWidth(90),
-          height: ScreenUtil().setHeight(502),
-          decoration: const BoxDecoration(
-              border: Border(
-                  left: BorderSide(
-            color: Colors.black12,
-            width: 1.0,
-          ))),
-          child: ListView.builder(
-              itemCount: productsType.length,
-              itemBuilder: (context, i) {
-                return _buildCategoryItem(productsType[i]);
-              })),
-    );
-  }
-
-  Widget _buildCategoryItem(ProductType item) {
-    final selectedProductType =
+    final items = context.watch<HomePageProvider>().productsType;
+    final selectedTypeId =
         context.watch<HomePageProvider>().selectedProductType;
-    final alreadySelected = item.id == selectedProductType;
-    return InkWell(
-      onTap: () =>
-          {context.read<HomePageProvider>().switchProductTtype(item.id)},
-      child: Container(
-        decoration: BoxDecoration(
-            color: alreadySelected ? Colors.blue[50] : Colors.white,
-            border: alreadySelected
-                ? const Border(left: BorderSide(width: 5, color: Colors.blue))
-                : null),
-        height: ScreenUtil().setHeight(35),
-        width: ScreenUtil().setWidth(90),
-        child: Center(
-          child: Text(item.name,
-              style: TextStyle(
-                  color: alreadySelected ? Colors.blue : Colors.black,
-                  fontSize: ScreenUtil().setSp(11))),
+    final onPressed = context.read<HomePageProvider>().switchProductTtype;
+    return Scaffold(
+        endDrawer: DrawerModal(
+          title: '结算',
+          width: 260 + 280,
+          child: CashierOrderPage(),
         ),
-      ),
-    );
+        body: Row(
+          children: [
+            ShopCart(title: '购物车'),
+            Expanded(
+              child: Column(
+                children: [
+                  // 搜索功能
+                  _buildSearch(),
+                  // 构建收银台中间商品部分
+                  _buildBody(),
+                  // 底部按钮区域
+                  const Divider(),
+                  _buildButtons(),
+                ],
+              ),
+            ),
+            SliderType(
+                selectedTypeId: selectedTypeId,
+                items: items,
+                onPressed: onPressed)
+          ],
+        ));
   }
 
   // 构建主体部分搜索功能

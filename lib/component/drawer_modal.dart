@@ -14,15 +14,18 @@ class DrawerModal extends StatelessWidget {
   final String title;
   final List<DrawerButton> buttons;
 
+  int? width;
+
   DrawerModal(
       {required this.child,
       this.elevation = 16,
       this.title = '',
-      this.buttons = const []});
+      this.buttons = const [],
+      this.width});
 
   @override
   Widget build(BuildContext context) {
-    double _drawerWidth = ScreenUtil().setWidth(540);
+    double _drawerWidth = ScreenUtil().setWidth(width ?? 540);
 
     // Drawer
 

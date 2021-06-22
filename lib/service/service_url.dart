@@ -22,6 +22,7 @@ Future requestData(String url, {data, method}) async {
     }
     print('开始获取数据...............请求地址:${url}');
     print('开始获取数据...............请求token:${token}');
+    print('data: ${data.toString()}');
     Response response;
     Dio dio = Dio();
 

@@ -8,3 +8,11 @@ Future fetchOrderList({dynamic params}) async {
 Future fetchOrderDetail({params}) async {
   return requestData('${serviceUrl}/api/order/detail', data: params);
 }
+
+Future cashierOrder({params}) async {
+  return requestData('${serviceUrl}/api/cashier/order', data: params);
+}
+
+Future cashierConfirm({params}) async {
+  return requestData('${serviceUrl}/api/cashier/confirm', data: params);
+}

@@ -7,6 +7,7 @@
 import 'package:flutter/material.dart';
 import 'package:pc_app/common/global.dart';
 import 'package:pc_app/component/navbar.dart';
+import 'package:pc_app/pages/refund.dart';
 import 'package:pc_app/provider/route.dart';
 import 'package:pc_app/pages/member.dart';
 import 'package:pc_app/pages/sign/login.dart';
@@ -31,6 +32,7 @@ class _IndexPageState extends State<IndexPage> {
     HomePage(),
     OrderPage(),
     MemberPage(),
+    RefundPage(),
   ];
   @override
   Widget build(BuildContext context) {

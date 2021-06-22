@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pc_app/provider/cart.dart';
 import 'package:pc_app/provider/global.dart';
 import 'package:pc_app/provider/home.dart';
 import 'package:pc_app/provider/member.dart';
@@ -45,6 +47,8 @@ class MyApp extends StatelessWidget {
     var profileChangeNotifier = ProfileChangeNotifier();
     // 会员 provider
     var memberProvider = MemberProvider();
+    // 购物车 provider
+    var cartProvider = CartProvider();
 
     // 初始化screenUtil
     return ScreenUtilInit(
@@ -62,13 +66,15 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(create: (_) => reportProvider),
             ChangeNotifierProvider(create: (_) => profileChangeNotifier),
             ChangeNotifierProvider(create: (_) => memberProvider),
+            ChangeNotifierProvider(create: (_) => cartProvider),
           ],
               child: MaterialApp(
                   title: '星亿腾',
                   theme: ThemeData(
                     primarySwatch: Colors.blue,
                   ),
-
+                  // 初始化loading组件
+                  builder: EasyLoading.init(),
                   // 添加国际化
                   localizationsDelegates: [
                     // 本地化的代理类
