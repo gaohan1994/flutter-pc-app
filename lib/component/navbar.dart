@@ -50,12 +50,12 @@ class _Navbar extends State<Navbar> {
   Widget build(BuildContext context) {
     // 创建导航栏的按钮
     final List iconButtonsActionsList = [
-      {"title": '收银台', "type": 0, "icon": Icons.ac_unit},
-      {"title": '订单', "type": 1, "icon": Icons.baby_changing_station},
-      {"title": '会员', "type": 2, "icon": Icons.cabin},
-      {"title": '退货', "type": 3, "icon": Icons.dangerous},
-      {"title": '进销存', "type": 4, "icon": Icons.e_mobiledata},
-      {"title": '更多', "type": 5, "icon": Icons.face},
+      {"title": '收银台', "type": 0, "icon": 'assets/icon_menu_cashier_pitch.png'},
+      {"title": '订单', "type": 1, "icon": 'assets/icon_menu_order.png'},
+      {"title": '会员', "type": 2, "icon": 'assets/icon_menu_member.png'},
+      {"title": '退货', "type": 3, "icon": 'assets/icon_menu_order.png'},
+      {"title": '进销存', "type": 4, "icon": 'assets/icon_menu_purchase.png'},
+      {"title": '更多', "type": 5, "icon": 'assets/icon_menu_more.png'},
     ];
 
     return AppBar(
@@ -107,10 +107,11 @@ class _Navbar extends State<Navbar> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
-              item['icon'],
-              size: ScreenUtil().setWidth(14),
-            ),
+            // Icon(
+            //   item['icon'],
+            //   size: ScreenUtil().setWidth(14),
+            // ),
+            Image(width: 10.w, height: 10.w, image: AssetImage(item['icon'])),
             Container(
               margin: EdgeInsets.only(left: 4),
               child: Text(

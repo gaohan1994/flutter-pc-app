@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:pc_app/component/drawer_modal.dart';
+import 'package:pc_app/component/empty_view.dart';
 import 'package:pc_app/component/search.dart';
 import 'package:pc_app/component/slider_type.dart';
+import 'package:pc_app/model/cart.dart';
 import 'package:pc_app/model/product.dart';
 import 'package:pc_app/pages/cashier_order.dart';
+import 'package:pc_app/provider/cart.dart';
 import 'package:pc_app/provider/home.dart';
 import 'package:provider/provider.dart';
 import '../component/shop_cart.dart';
@@ -19,16 +23,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  DateFormat format1 = DateFormat('MM月dd日');
+  DateFormat format2 = DateFormat('HH:ss');
   // 滑动的controller
   final ScrollController scrollController = ScrollController();
   // 是否显示搜索列表
   bool showSearchList = false;
   // 查询到的商品列表
   List<ProductInfo> searchProducts = [];
-  // 挂单列表
-  List _delayOrderList = [
-    {"time": DateTime.now(), "data": []}
-  ];
 
   @override
   void initState() {
@@ -124,6 +126,9 @@ class _HomePageState extends State<HomePage> {
     final buttonStyle = OutlinedButton.styleFrom(
         side: const BorderSide(width: 1, color: Colors.blue));
 
+    List<ProductInfo> cart = context.watch<CartProvider>().cart;
+    List<CartDelay> dalayList = context.watch<CartProvider>().delayList;
+
     return Padding(
         padding: const EdgeInsets.only(bottom: 8),
         child: Row(
@@ -136,7 +141,7 @@ class _HomePageState extends State<HomePage> {
               margin: const EdgeInsets.only(right: 6),
               child: OutlinedButton(
                 style: buttonStyle,
-                onPressed: () => {},
+                onPressed: () => {context.read<CartProvider>().emptyCart()},
                 child: const Text('整单删除'),
               ),
             ),
@@ -146,7 +151,12 @@ class _HomePageState extends State<HomePage> {
               margin: const EdgeInsets.only(right: 6),
               child: OutlinedButton(
                 style: buttonStyle,
-                onPressed: () => _buildDelayOrderDialog(context),
+                onPressed: () => {
+                  if (cart.isEmpty)
+                    {_buildDelayOrderDialog()}
+                  else
+                    {context.read<CartProvider>().addDelay()}
+                },
                 child: const Text('挂单'),
               ),
             ),
@@ -201,7 +211,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   // 挂单条目
-  Widget _buildDialogRow({item, Color? color}) {
+  Widget _buildDialogRow({required ProductInfo item, Color? color}) {
     final _textStyle = TextStyle(
         fontSize: ScreenUtil().setSp(11),
         color: color != null ? color : Colors.black);
@@ -217,7 +227,8 @@ class _HomePageState extends State<HomePage> {
             child: Container(
               padding: EdgeInsets.only(left: 11),
               child: Text(
-                item['name'],
+                item.name,
+                maxLines: 1,
                 style: _textStyle,
               ),
             ),
@@ -228,11 +239,11 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
-                  item['price'],
+                  '${item.price}',
                   style: _textStyle,
                 ),
                 Text(
-                  item['count'],
+                  '${item.sellNum}',
                   style: _textStyle,
                 )
               ],
@@ -244,24 +255,25 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future _buildDelayOrderDialog(context) async {
+  Future _buildDelayOrderDialog() async {
+    final _textStyle =
+        TextStyle(fontSize: ScreenUtil().setSp(11), color: Colors.blue);
+
     final option = await showDialog(
         context: context,
         builder: (BuildContext context) {
           // 选中的 挂单编号
           int _selectedDelayOrderListIndex = 0;
-
-          List _testData = [
-            {'name': '多乐食意大利威化饼干椒盐鸡蛋', "price": '10.00', "count": '5.00'},
-            {'name': '多乐食意大利威化饼干椒盐鸡蛋', "price": '10.00', "count": '5.00'},
-            {'name': '多乐食意大利威化饼干椒盐鸡蛋', "price": '10.00', "count": '5.00'},
-            {'name': '多乐食意大利威化饼干椒盐鸡蛋', "price": '10.00', "count": '5.00'},
-            {'name': '多乐食意大利威化饼干椒盐鸡蛋', "price": '10.00', "count": '5.00'},
-            {'name': '多乐食意大利威化饼干椒盐鸡蛋', "price": '10.00', "count": '5.00'},
-            {'name': '多乐食意大利威化饼干椒盐鸡蛋', "price": '10.00', "count": '5.00'},
-          ];
+          List<CartDelay> dalayList = context.watch<CartProvider>().delayList;
 
           return StatefulBuilder(builder: (BuildContext context, dialogState) {
+            // 选中的挂单
+            CartDelay? currentDelay;
+
+            if (dalayList.isNotEmpty &&
+                dalayList[_selectedDelayOrderListIndex] != null) {
+              currentDelay = dalayList[_selectedDelayOrderListIndex];
+            }
             return SimpleDialog(
               contentPadding: EdgeInsets.all(0),
               titlePadding: EdgeInsets.all(0),
@@ -277,100 +289,245 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               children: [
-                Container(
-                  padding: EdgeInsets.all(6),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            border:
-                                Border.all(width: 1, color: Colors.black12)),
-                        width: ScreenUtil().setWidth(100),
-                        height: ScreenUtil().setWidth(300),
-                        margin: const EdgeInsets.only(right: 6),
-                        child: ListView(
-                          children: _testData.asMap().entries.map((entry) {
-                            int index = entry.key;
-                            final item = entry.value;
-
-                            final _itemSelected =
-                                index == _selectedDelayOrderListIndex;
-
-                            final _textStyle = _itemSelected
-                                ? const TextStyle(color: Colors.white)
-                                : const TextStyle(color: Colors.black);
-
-                            return InkWell(
-                              onTap: () {
-                                dialogState(() {
-                                  _selectedDelayOrderListIndex = index;
-                                });
-                              },
-                              child: Container(
-                                width: ScreenUtil().setWidth(100),
-                                height: ScreenUtil().setWidth(60),
-                                color:
-                                    _itemSelected ? Colors.blue : Colors.white,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      '09月20日',
-                                      style: _textStyle,
-                                    ),
-                                    Text(
-                                      '15:00',
-                                      style: _textStyle,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                            border:
-                                Border.all(width: 1, color: Colors.black12)),
-                        width: ScreenUtil().setWidth(345),
-                        height: ScreenUtil().setWidth(300),
-                        child: Column(
+                dalayList.isNotEmpty && currentDelay != null
+                    ? Container(
+                        padding: EdgeInsets.all(6),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
-                              width: ScreenUtil().setWidth(345),
-                              height: ScreenUtil().setWidth(30),
-                              color: Colors.blue,
-                              alignment: Alignment.centerLeft,
-                              padding: EdgeInsets.only(left: 15),
-                              child: Text(
-                                '会员：黄小姐 13305899897',
-                                style: TextStyle(color: Colors.white),
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 1, color: Colors.black12)),
+                              width: ScreenUtil().setWidth(100),
+                              height: ScreenUtil().setWidth(300),
+                              margin: const EdgeInsets.only(right: 6),
+                              child: ListView(
+                                children:
+                                    dalayList.asMap().entries.map((entry) {
+                                  int index = entry.key;
+                                  final item = entry.value;
+
+                                  final _itemSelected =
+                                      index == _selectedDelayOrderListIndex;
+
+                                  final _textStyle = _itemSelected
+                                      ? const TextStyle(color: Colors.white)
+                                      : const TextStyle(color: Colors.black);
+
+                                  return InkWell(
+                                    onTap: () {
+                                      dialogState(() {
+                                        _selectedDelayOrderListIndex = index;
+                                      });
+                                    },
+                                    child: Container(
+                                      width: ScreenUtil().setWidth(100),
+                                      height: ScreenUtil().setWidth(60),
+                                      color: _itemSelected
+                                          ? Colors.blue
+                                          : Colors.white,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            format1
+                                                .format(DateTime
+                                                    .fromMicrosecondsSinceEpoch(
+                                                        int.parse(item.time)))
+                                                .toString(),
+                                            style: _textStyle,
+                                          ),
+                                          Text(
+                                            format2
+                                                .format(DateTime
+                                                    .fromMicrosecondsSinceEpoch(
+                                                        int.parse(item.time)))
+                                                .toString(),
+                                            style: _textStyle,
+                                          )
+                                          // Text(item.time, style: _textStyle)
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
                               ),
                             ),
-                            _buildDialogRow(
-                              color: Colors.blue,
-                              item: {
-                                "name": '商品名称',
-                                "price": '原价',
-                                "count": '数量'
-                              },
-                            ),
-                            Expanded(
-                              child: ListView(
-                                children: _testData.map((item) {
-                                  return _buildDialogRow(item: item);
-                                }).toList(),
+                            Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 1, color: Colors.black12)),
+                              width: ScreenUtil().setWidth(345),
+                              height: ScreenUtil().setWidth(300),
+                              child: Column(
+                                children: [
+                                  currentDelay.member != null
+                                      ? Container(
+                                          width: ScreenUtil().setWidth(345),
+                                          height: ScreenUtil().setWidth(30),
+                                          color: Colors.blue,
+                                          alignment: Alignment.centerLeft,
+                                          padding: EdgeInsets.only(left: 15),
+                                          child: Text(
+                                            '会员：${currentDelay.member!.username} ${currentDelay.member?.phone}',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ))
+                                      : Container(),
+                                  Container(
+                                    width: ScreenUtil().setWidth(345),
+                                    height: ScreenUtil().setWidth(30),
+                                    decoration: const BoxDecoration(
+                                        border: Border(
+                                            bottom: BorderSide(
+                                                width: 1,
+                                                color: Colors.black12))),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Container(
+                                            padding: EdgeInsets.only(left: 11),
+                                            child: Text(
+                                              '商品名称',
+                                              style: _textStyle,
+                                            ),
+                                          ),
+                                          flex: 1,
+                                        ),
+                                        Expanded(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Text(
+                                                '原价',
+                                                style: _textStyle,
+                                              ),
+                                              Text(
+                                                '数量',
+                                                style: _textStyle,
+                                              )
+                                            ],
+                                          ),
+                                          flex: 1,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: ListView(
+                                      children: currentDelay.list.map((item) {
+                                        return _buildDialogRow(item: item);
+                                      }).toList(),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(bottom: 6.w),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        InkWell(
+                                          onTap: () {
+                                            context
+                                                .read<CartProvider>()
+                                                .removeDelay();
+                                          },
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  width: 1, color: Colors.blue),
+                                              color: Colors.white,
+                                            ),
+                                            margin: EdgeInsets.only(right: 6.w),
+                                            width: 100.w,
+                                            height: 30.w,
+                                            child: Text(
+                                              '全部清空',
+                                              style: TextStyle(
+                                                  fontSize: 11,
+                                                  color: Colors.blue),
+                                            ),
+                                          ),
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            // 删除当前挂单
+                                            context
+                                                .read<CartProvider>()
+                                                .removeDelay(
+                                                    index:
+                                                        _selectedDelayOrderListIndex);
+
+                                            // 重设 _selectedDelayOrderListIndex = 0;
+                                            dialogState(() {
+                                              _selectedDelayOrderListIndex = 0;
+                                            });
+                                          },
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  width: 1, color: Colors.blue),
+                                              color: Colors.white,
+                                            ),
+                                            margin: EdgeInsets.only(right: 6.w),
+                                            width: 100.w,
+                                            height: 30.w,
+                                            child: Text(
+                                              '删除',
+                                              style: TextStyle(
+                                                  fontSize: 11,
+                                                  color: Colors.blue),
+                                            ),
+                                          ),
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                            context
+                                                .read<CartProvider>()
+                                                .choiceDelay(
+                                                    _selectedDelayOrderListIndex);
+                                          },
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  width: 1, color: Colors.blue),
+                                              color: Colors.blue,
+                                            ),
+                                            margin: EdgeInsets.only(right: 6.w),
+                                            width: 100.w,
+                                            height: 30.w,
+                                            child: Text(
+                                              '下单',
+                                              style: TextStyle(
+                                                  fontSize: 11,
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ],
                               ),
                             )
                           ],
                         ),
                       )
-                    ],
-                  ),
-                )
+                    : Container(
+                        width: 450.w,
+                        child: EmptyView(),
+                      )
               ],
             );
           });
