@@ -13,6 +13,9 @@ class HomePageProvider extends ChangeNotifier {
   int _selectedProductType = -1;
   get selectedProductType => _selectedProductType;
 
+  // 选中的二级分类
+  ProductType? selectedSecondType;
+
   // 商品分类
   List<ProductType> _productsType = [];
   List<ProductType> get productsType => _productsType;
@@ -20,6 +23,18 @@ class HomePageProvider extends ChangeNotifier {
   // 商品列表
   List<ProductInfo> _productsList = [];
   List<ProductInfo> get productsList => _productsList;
+
+  // 选中/取消选中 二级分类
+  void switchSecondProductType({ProductType? secondType}) {
+    // 如果没传则取消选中二级分类
+    if (secondType == null) {
+      selectedSecondType = null;
+    } else {
+      selectedSecondType = secondType;
+    }
+    getProducts();
+    notifyListeners();
+  }
 
   void switchProductTtype(int typeId) {
     _selectedProductType = typeId;
@@ -32,7 +47,9 @@ class HomePageProvider extends ChangeNotifier {
     var params = {
       "pageNum": 1,
       "pageSize": pageSize,
-      "type": "${_selectedProductType}"
+      "type": selectedSecondType != null
+          ? '${selectedSecondType!.id}'
+          : "$_selectedProductType"
     };
 
     print('---请求商品分类--:${_selectedProductType}');

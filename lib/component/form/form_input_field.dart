@@ -32,6 +32,7 @@ class GHTextField extends StatefulWidget {
   final TextAlign textAlign; //对齐方式，默认左对齐
   final InputBorder border; //边框样式，默认无边框
   final TextEditingController? controller;
+  final bool obscureText;
 
   GHTextField({
     // Key key,
@@ -51,6 +52,7 @@ class GHTextField extends StatefulWidget {
     this.textAlign = TextAlign.left,
     this.border = InputBorder.none, //去掉下划线
     this.controller,
+    this.obscureText = false,
   });
 
   @override
@@ -81,12 +83,22 @@ class _JhTextFieldState extends State<GHTextField> {
 
   @override
   Widget build(BuildContext context) {
+    // var params;
+
+    // if (widget.obscureText == false) {
+    //   params.minLines = widget.maxLines ?? 1;
+    //   params.maxLines = widget.maxLines ?? _maxLines;
+    // } else {
+    //   params.obscureText = widget.obscureText;
+    // }
+
     return TextField(
       enabled: widget.enabled,
       controller: _textController,
       keyboardType: widget.keyboardType,
       style: widget.textStyle,
       textAlign: widget.textAlign,
+      // obscureText: widget.obscureText,
       minLines: widget.maxLines ?? 1,
       maxLines: widget.maxLines ?? _maxLines,
       maxLength: widget.showMaxLength == true ? widget.maxLength : null,

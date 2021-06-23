@@ -85,6 +85,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   // 搜索功能
                   _buildSearch(),
+                  _buildSecondCate(),
                   // 构建收银台中间商品部分
                   _buildBody(),
                   // 底部按钮区域
@@ -122,12 +123,89 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _buildSecondCate() {
+    var types = context.watch<HomePageProvider>().productsType;
+    var selectedTypeId = context.watch<HomePageProvider>().selectedProductType;
+    var selectedSecondType =
+        context.watch<HomePageProvider>().selectedSecondType;
+
+    ProductType selectedType =
+        types.firstWhere((element) => element.id == selectedTypeId);
+
+    final selectedBorder =
+        BoxDecoration(border: Border.all(width: 1, color: Colors.blue));
+    final normalBorder =
+        BoxDecoration(border: Border.all(width: 1, color: Colors.black12));
+
+    final selectedTextStyle =
+        TextStyle(fontSize: ScreenUtil().setSp(11), color: Colors.blue);
+    final normalTextStyle =
+        TextStyle(fontSize: ScreenUtil().setSp(11), color: Colors.black26);
+
+    if (selectedType.subCategory!.isNotEmpty) {
+      List<Widget> renderSelctedTypes = [
+        InkWell(
+          onTap: () {
+            // 如果选择全部则把选中的二级分类置空
+            context.read<HomePageProvider>().switchSecondProductType();
+          },
+          child: Container(
+            alignment: Alignment.center,
+            margin: EdgeInsets.only(right: 3.w),
+            decoration:
+                selectedSecondType != null ? normalBorder : selectedBorder,
+            width: 80.w,
+            height: 20.h,
+            child: Text('全部',
+                style: selectedSecondType != null
+                    ? normalTextStyle
+                    : selectedTextStyle),
+          ),
+        ),
+      ];
+
+      for (int i = 0; i < selectedType.subCategory!.length; i++) {
+        renderSelctedTypes.add(InkWell(
+          onTap: () {
+            // 如果选中当前二级分类则传入
+            context.read<HomePageProvider>().switchSecondProductType(
+                secondType: selectedType.subCategory![i]);
+          },
+          child: Container(
+            alignment: Alignment.center,
+            margin: EdgeInsets.only(right: 3.w),
+            decoration: selectedSecondType != null &&
+                    selectedSecondType.id == selectedType.subCategory![i].id
+                ? selectedBorder
+                : normalBorder,
+            width: 80.w,
+            height: 20.h,
+            child: Text(selectedType.subCategory![i].name,
+                style: selectedSecondType != null &&
+                        selectedSecondType.id == selectedType.subCategory![i].id
+                    ? selectedTextStyle
+                    : normalTextStyle),
+          ),
+        ));
+      }
+
+      return Container(
+        padding: EdgeInsets.only(left: 4.w, right: 4.w),
+        margin: EdgeInsets.only(top: 10.w, bottom: 10.w),
+        child: Row(
+          children: renderSelctedTypes,
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
+
   Widget _buildButtons() {
     final buttonStyle = OutlinedButton.styleFrom(
         side: const BorderSide(width: 1, color: Colors.blue));
 
     List<ProductInfo> cart = context.watch<CartProvider>().cart;
-    List<CartDelay> dalayList = context.watch<CartProvider>().delayList;
 
     return Padding(
         padding: const EdgeInsets.only(bottom: 8),

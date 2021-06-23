@@ -17,7 +17,7 @@ class SliderType extends StatelessWidget {
       return Align(
         alignment: Alignment.topRight,
         child: Container(
-            width: ScreenUtil().setWidth(90),
+            width: 90.w,
             height: ScreenUtil().setHeight(502),
             decoration: const BoxDecoration(
                 border: Border(

@@ -88,7 +88,14 @@ class MyApp extends StatelessWidget {
                   ],
                   navigatorKey: navigatorKey,
                   locale: const Locale('zh', 'CN'),
-                  home: IndexPage()))),
+                  home: Container(
+                    constraints: BoxConstraints(
+                        maxHeight: 540.h,
+                        maxWidth: 960.w,
+                        minWidth: 960.w,
+                        minHeight: 540.h),
+                    child: IndexPage(),
+                  )))),
     );
   }
 }

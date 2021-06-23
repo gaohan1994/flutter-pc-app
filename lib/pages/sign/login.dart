@@ -1,6 +1,10 @@
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:pc_app/component/form/form_input.dart';
 import 'package:pc_app/model/user.dart';
+import 'package:pc_app/pages/sign/component.dart';
 import 'package:pc_app/provider/global.dart';
 import 'package:pc_app/route/application.dart';
 import 'package:pc_app/service/login_method.dart';
@@ -18,14 +22,28 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPage extends State<LoginPage> {
-  String _username = '';
+  String _username = '18559239787';
+
+  String _password = '111111';
+
+  bool selected = false;
 
   void _login() async {
     try {
-      var result = await oauthToken(params: {
-        "phone": "18559239787",
-        "password": "96e79218965eb72c92a549dd5a330112"
-      });
+      print('_username: ${_username}');
+      // if (_username.isEmpty) {
+      //   throw Exception('请输入用户名');
+      // }
+      // if (_password.isEmpty) {
+      //   throw Exception('请输入密码');
+      // }
+
+      String md5Passwrod = md5.convert(utf8.encode(_password)).toString();
+      print('md5Passwrod: ${md5Passwrod}');
+
+      var params = {"phone": _username, "password": md5Passwrod};
+
+      var result = await oauthToken(params: params);
 
       var resultMap = json.decode(result.toString());
       print('登录结果: ${resultMap.toString()}');
@@ -45,6 +63,7 @@ class _LoginPage extends State<LoginPage> {
         Application.router?.navigateTo(context, '/');
       }
     } catch (e) {
+      showToast(e.toString());
       print('登录报错:${e}');
     }
   }
@@ -52,46 +71,116 @@ class _LoginPage extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: 960.w,
-        alignment: Alignment.center,
-        child: Container(
-          alignment: Alignment.center,
-          width: 270.w,
-          child: Form(
-              child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextFormField(
-                decoration: InputDecoration(
-                    hintText: '请输入手机号',
-                    labelText: '手机号',
-                    icon: Icon(Icons.supervised_user_circle)),
-              ),
-              TextFormField(
-                obscureText: true,
-                // keyboardType: TextInputType.visiblePassword,
-                decoration: const InputDecoration(
-                    hintText: '请输入密码', labelText: '密码', icon: Icon(Icons.lock)),
-              ),
-              Container(
-                margin: EdgeInsets.only(top: 30.w),
+        body: BackgroundView(
+            child: Container(
+                margin: EdgeInsets.only(left: 514.w, top: 240.h),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    GhFormInput(
+                      width: 266.w,
+                      hintText: '请输入账号',
+                      text: _username,
+                      inputCallBack: (value) {
+                        setState(() {
+                          _username = value;
+                        });
+                      },
+                      leftWidget: Container(
+                          margin: EdgeInsets.only(right: 10.w),
+                          child: Image(
+                            width: 14.w,
+                            height: 14.w,
+                            image: AssetImage('assets/lo_user.png'),
+                          )),
+                    ),
+                    GhFormInput(
+                      width: 266.w,
+                      obscureText: true,
+                      hintText: '请输入密码',
+                      text: _password,
+                      inputCallBack: (value) {
+                        setState(() {
+                          _password = value;
+                        });
+                      },
+                      leftWidget: Container(
+                          margin: EdgeInsets.only(right: 10.w),
+                          child: Image(
+                            width: 14.w,
+                            height: 14.w,
+                            image: AssetImage('assets/lo_mima.png'),
+                          )),
+                    ),
                     Container(
-                      width: 270.w,
-                      height: 35.w,
-                      child: ElevatedButton(
-                          onPressed: () => _login(), child: Text('登录')),
-                    )
+                      margin: EdgeInsets.only(top: 33.w),
+                      child: Row(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                selected = !selected;
+                              });
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(right: 8.w),
+                              child: selected == true
+                                  ? Image(
+                                      width: 10.w,
+                                      height: 10.w,
+                                      image: AssetImage(
+                                          'assets/img_checkbox_sel.png'))
+                                  : Image(
+                                      width: 10.w,
+                                      height: 10.w,
+                                      image: AssetImage(
+                                          'assets/img_checkbox_nol.png')),
+                            ),
+                          ),
+                          Text(
+                            '登录代表您已同意《用户协议》和《隐私权政策》',
+                            style: TextStyle(
+                                fontSize: ScreenUtil().setSp(11),
+                                color: Colors.black45),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 22.h),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 270.w,
+                            height: 35.w,
+                            child: ElevatedButton(
+                                onPressed: () => _login(), child: Text('登录')),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                        margin: EdgeInsets.only(top: 17.h),
+                        width: 266.w,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '立即注册',
+                              style: TextStyle(
+                                  fontSize: ScreenUtil().setSp(11),
+                                  color: Colors.blue),
+                            ),
+                            Text(
+                              '忘记密码？',
+                              style: TextStyle(
+                                  fontSize: ScreenUtil().setSp(11),
+                                  color: Colors.black45),
+                            )
+                          ],
+                        )),
                   ],
-                ),
-              )
-            ],
-          )),
-        ),
-      ),
-    );
+                ))));
   }
 }

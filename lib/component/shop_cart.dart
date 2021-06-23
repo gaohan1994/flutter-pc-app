@@ -135,9 +135,8 @@ class _ShopCartState extends State<ShopCart> {
             color: Colors.black12,
             width: 1.0,
           ))),
-          height: ScreenUtil().setHeight(56),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(12.w),
             child: Row(
               children: [
                 InkWell(
@@ -205,7 +204,7 @@ class _ShopCartState extends State<ShopCart> {
                           ),
                           Text('￥$cartPrice',
                               style: TextStyle(
-                                  fontSize: ScreenUtil().setSp(14),
+                                  fontSize: ScreenUtil().setSp(12),
                                   fontWeight: FontWeight.bold,
                                   color: Colors.red))
                         ],
