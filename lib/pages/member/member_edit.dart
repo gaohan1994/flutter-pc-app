@@ -5,9 +5,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:pc_app/component/form/form_input.dart';
+import 'package:pc_app/model/member.dart';
 import 'package:pc_app/provider/member.dart';
 import 'package:pc_app/route/application.dart';
 import 'package:pc_app/service/member_method.dart';
+import 'package:pc_app/service/service_url.dart';
 import 'package:provider/provider.dart';
 
 class MemberEdit extends StatefulWidget {
@@ -24,12 +26,15 @@ class _MemberEdit extends State<MemberEdit> {
   final TextEditingController _controllerId = TextEditingController();
   final TextEditingController _controllerPhone = TextEditingController();
   final TextEditingController _controllerBirthday = TextEditingController();
+  int _memberLevelId = -1;
+
   int sex = 0;
 
   @override
   initState() {
     super.initState();
     var memberDetail = context.read<MemberProvider>().memberDetail;
+    var memberLevel = context.read<MemberProvider>().memberLevel;
 
     // 如果是修改则初始化数据
     if (widget.isEdit == true) {
@@ -37,7 +42,6 @@ class _MemberEdit extends State<MemberEdit> {
           ? DateTime.parse(memberDetail.birthDate!)
           : DateTime(2000);
 
-      print('memberDetail.sex${memberDetail.sex}');
       int _sex = memberDetail.sex != null ? int.parse(memberDetail.sex!) : 0;
 
       setState(() {
@@ -47,6 +51,17 @@ class _MemberEdit extends State<MemberEdit> {
         _controllerBirthday.text = format.format(birthString).toString();
         sex = _sex;
       });
+
+      // 如果编辑会员则找到会员的等级并且赋值
+      if (memberDetail.levelName != null) {
+        MemberLevel? currentLevel = memberLevel.firstWhere(
+            (element) => element.levelName == memberDetail.levelName);
+        if (currentLevel != null) {
+          setState(() {
+            _memberLevelId = currentLevel.id;
+          });
+        }
+      }
     }
 
     // 如果是新增初始化卡号
@@ -55,9 +70,9 @@ class _MemberEdit extends State<MemberEdit> {
         var result = await getRandomCaroNo();
         var resultMap = json.decode(result.toString());
         String randomCode = resultMap['data'];
-        print('randomCode: ${randomCode}');
         setState(() {
           _controllerId.text = randomCode;
+          _memberLevelId = memberLevel[0].id;
         });
       });
     }
@@ -90,31 +105,42 @@ class _MemberEdit extends State<MemberEdit> {
 
     var memberDetail = context.read<MemberProvider>().memberDetail;
 
-    String birthString =
-        format.format(DateTime.parse(_controllerBirthday.text)).toString();
+    // memberInfoAdd 新增修改会员的报文
+    MemberInfoAdd memberInfoAdd = MemberInfoAdd(
+      cardNo: _controllerId.text,
+      phone: _controllerPhone.text,
+      status: 1,
+      username: _controllerName.text,
+      sex: sex,
+    );
 
-    var params = {
-      "birthDate": _controllerBirthday.text.isNotEmpty ? birthString : "",
-      "cardNo": _controllerId.text,
-      "phone": _controllerPhone.text,
-      "sex": "${sex}",
-      "status": 1,
-      "username": _controllerName.text
-    };
+    // 如果是修改则加入id
+    if (widget.isEdit == true) {
+      memberInfoAdd.id = memberDetail.id;
+    }
+
+    // 如果传入了生日则赋值
+    if (_controllerBirthday.text.isNotEmpty) {
+      String birthString =
+          format.format(DateTime.parse(_controllerBirthday.text)).toString();
+      memberInfoAdd.birthDate = birthString;
+    }
+
+    dynamic result;
 
     if (widget.isEdit == true) {
-      params['id'] = memberDetail.id;
+      result = await memberInfoEdit(params: memberInfoAdd.toJson());
+    } else {
+      result = await fetchMemberInfoAdd(params: memberInfoAdd.toJson());
     }
-    print('params: ${params.toString()}');
 
-    var fetchFuction = widget.isEdit == true ? memberInfoEdit : memberInfoAdd;
-    fetchFuction(params: params).then((value) {
-      print('value: ${value}');
+    var resultMap = json.decode(result.toString());
+    if (resultMap['code'] == successCode) {
       showToast(widget.isEdit == true ? '修改成功！' : '新增成功!');
 
       context.read<MemberProvider>().getMemberList();
       Application.router?.pop(context);
-    });
+    }
   }
 
   Future ftrender() async {
@@ -123,6 +149,7 @@ class _MemberEdit extends State<MemberEdit> {
 
   @override
   Widget build(BuildContext context) {
+    List<MemberLevel> memberLevel = context.read<MemberProvider>().memberLevel;
     return FutureBuilder(
         future: widget.isEdit == false ? getRandomCaroNo() : ftrender(),
         builder: (BuildContext context, snapshot) {
@@ -190,22 +217,26 @@ class _MemberEdit extends State<MemberEdit> {
                           child: Column(
                             children: [
                               _title('更多信息'),
-                              GhFormInput(
-                                width: 350.w,
-                                title: '等级',
-                                mainWidget: DropdownButton(
-                                  underline: Container(height: 0),
-                                  isExpanded: true,
-                                  value: 'v1',
-                                  items: [
-                                    DropdownMenuItem(
-                                        value: 'v1', child: Text('VIP1')),
-                                    DropdownMenuItem(
-                                        value: 'v2', child: Text('VIP2'))
-                                  ],
-                                  onChanged: (value) {
-                                    print('value: ${value}');
-                                  },
+                              Offstage(
+                                offstage: memberLevel.isNotEmpty ? false : true,
+                                child: GhFormInput(
+                                  width: 350.w,
+                                  title: '等级',
+                                  mainWidget: DropdownButton(
+                                    underline: Container(height: 0),
+                                    isExpanded: true,
+                                    value: _memberLevelId,
+                                    items: memberLevel
+                                        .map((level) => DropdownMenuItem(
+                                            value: level.id,
+                                            child: Text(level.levelName)))
+                                        .toList(),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _memberLevelId = value as int;
+                                      });
+                                    },
+                                  ),
                                 ),
                               ),
                               GhFormInput(

@@ -151,3 +151,95 @@ Map<String, dynamic> _$PreferenceToJson(Preference instance) =>
       'typeId': instance.typeId,
       'typeName': instance.typeName,
     };
+
+MemberInfoAdd _$MemberInfoAddFromJson(Map json) {
+  return MemberInfoAdd(
+    cardNo: json['cardNo'] as String,
+    phone: json['phone'] as String,
+    status: json['status'] as int,
+    username: json['username'] as String,
+    avatar: json['avatar'] as String?,
+    birthDate: json['birthDate'] as String?,
+    id: json['id'] as int?,
+    levelId: json['levelId'] as int?,
+    sex: json['sex'] as int?,
+  );
+}
+
+Map<String, dynamic> _$MemberInfoAddToJson(MemberInfoAdd instance) {
+  final val = <String, dynamic>{
+    'cardNo': instance.cardNo,
+    'phone': instance.phone,
+    'status': instance.status,
+    'username': instance.username,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('avatar', instance.avatar);
+  writeNotNull('birthDate', instance.birthDate);
+  writeNotNull('id', instance.id);
+  writeNotNull('levelId', instance.levelId);
+  writeNotNull('sex', instance.sex);
+  return val;
+}
+
+MemberLevel _$MemberLevelFromJson(Map json) {
+  return MemberLevel(
+    (json['accumulativePointsThreshold'] as num).toDouble(),
+    json['enableMemberPrice'] as bool,
+    json['levelName'] as String,
+    json['id'] as int,
+    json['level'] as int,
+    json['merchantId'] as int,
+    (json['obtainPoints'] as num).toDouble(),
+    json['status'] as bool,
+    (json['storeThreshold'] as num?)?.toDouble(),
+    (json['memberDiscount'] as num?)?.toDouble(),
+    (json['obtainMoney'] as num?)?.toDouble(),
+  );
+}
+
+Map<String, dynamic> _$MemberLevelToJson(MemberLevel instance) {
+  final val = <String, dynamic>{
+    'accumulativePointsThreshold': instance.accumulativePointsThreshold,
+    'enableMemberPrice': instance.enableMemberPrice,
+    'levelName': instance.levelName,
+    'id': instance.id,
+    'level': instance.level,
+    'merchantId': instance.merchantId,
+    'obtainPoints': instance.obtainPoints,
+    'status': instance.status,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('storeThreshold', instance.storeThreshold);
+  writeNotNull('memberDiscount', instance.memberDiscount);
+  writeNotNull('obtainMoney', instance.obtainMoney);
+  return val;
+}
+
+MemberLevelInterface _$MemberLevelInterfaceFromJson(Map json) {
+  return MemberLevelInterface(
+    json['total'] as int,
+    (json['rows'] as List<dynamic>)
+        .map((e) => MemberLevel.fromJson(Map<String, dynamic>.from(e as Map)))
+        .toList(),
+  );
+}
+
+Map<String, dynamic> _$MemberLevelInterfaceToJson(
+        MemberLevelInterface instance) =>
+    <String, dynamic>{
+      'total': instance.total,
+      'rows': instance.rows.map((e) => e.toJson()).toList(),
+    };

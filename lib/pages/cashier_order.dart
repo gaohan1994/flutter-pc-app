@@ -301,7 +301,7 @@ class _CashierOrderPage extends State<CashierOrderPage> {
       return InkWell(
         onTap: () {
           // 选择会员
-          Global.selectMemberDialog(context);
+          Global.selectMemberDialog(context, selectedMember);
         },
         child: Container(
           alignment: Alignment.center,

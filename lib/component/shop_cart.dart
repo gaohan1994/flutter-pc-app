@@ -148,7 +148,7 @@ class _ShopCartState extends State<ShopCart> {
                   offstage: widget.type == CartType.Home ? false : true,
                   child: InkWell(
                       onTap: () {
-                        Global.selectMemberDialog(context);
+                        Global.selectMemberDialog(context, selectedMember);
                       },
                       child: Container(
                           decoration: BoxDecoration(

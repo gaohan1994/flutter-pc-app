@@ -3,6 +3,8 @@ import 'package:pc_app/model/member.dart';
 import 'package:pc_app/service/member_method.dart';
 import 'dart:convert';
 
+import 'package:pc_app/service/service_url.dart';
+
 class MemberProvider extends ChangeNotifier {
   // 页数
   int page = 1;
@@ -14,6 +16,8 @@ class MemberProvider extends ChangeNotifier {
   int selectedId = 0;
   // 搜索的值
   String searchValue = '';
+
+  List<MemberLevel> memberLevel = [];
 
   // 排序方式
   String filterWay = 'totalAmount';
@@ -37,6 +41,18 @@ class MemberProvider extends ChangeNotifier {
   MemberStatistic memberStatic = MemberStatistic(0, 0);
 
   MemberDetail memberDetail = MemberDetail();
+
+  // 获取会员等级列表
+  Future getMemberLevel() async {
+    var result = await fetchMemberLevel();
+    var resultMap = json.decode(result.toString());
+    if (resultMap['code'] == successCode) {
+      var resultData = MemberLevelInterface.fromJson(resultMap['data']);
+      print('resultData: ${resultData.rows}');
+      memberLevel = resultData.rows;
+      notifyListeners();
+    }
+  }
 
   // 获取会员统计
   Future getMemberStatic() async {

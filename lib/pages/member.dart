@@ -23,6 +23,8 @@ class _MemberPage extends State<MemberPage> {
       context.read<MemberProvider>().getMemberList();
       // 获取会员统计数据
       context.read<MemberProvider>().getMemberStatic();
+      // 获取会员等级列表
+      context.read<MemberProvider>().getMemberLevel();
     });
   }
 

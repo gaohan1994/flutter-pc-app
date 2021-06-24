@@ -118,3 +118,84 @@ class Preference {
 
   toJson() => _$PreferenceToJson(this);
 }
+
+@JsonSerializable()
+class MemberInfoAdd {
+  MemberInfoAdd({
+    required this.cardNo,
+    required this.phone,
+    required this.status,
+    required this.username,
+    this.avatar,
+    this.birthDate,
+    this.id,
+    this.levelId,
+    this.sex,
+  });
+
+  String cardNo;
+  String phone;
+  int status;
+  String username;
+  String? avatar;
+  String? birthDate;
+  int? id;
+  int? levelId;
+  int? sex;
+
+  factory MemberInfoAdd.fromJson(Map<String, dynamic> json) =>
+      _$MemberInfoAddFromJson(json);
+
+  toJson() => _$MemberInfoAddToJson(this);
+}
+
+@JsonSerializable()
+class MemberLevel {
+  MemberLevel(
+    this.accumulativePointsThreshold,
+    this.enableMemberPrice,
+    this.levelName,
+    this.id,
+    this.level,
+    this.merchantId,
+    this.obtainPoints,
+    this.status,
+    this.storeThreshold,
+    this.memberDiscount,
+    this.obtainMoney,
+  );
+
+  double accumulativePointsThreshold;
+  bool enableMemberPrice;
+  String levelName;
+  int id;
+  int level;
+  int merchantId;
+  double obtainPoints;
+  bool status;
+  double? storeThreshold;
+  double? memberDiscount;
+  double? obtainMoney;
+  factory MemberLevel.fromJson(Map<String, dynamic> json) =>
+      _$MemberLevelFromJson(json);
+
+  toJson() => _$MemberLevelToJson(this);
+}
+
+@JsonSerializable()
+class MemberLevelInterface {
+  MemberLevelInterface(
+    this.total,
+    this.rows,
+  );
+
+  // 今日新增会员数
+  int total;
+  // 总会员数
+  List<MemberLevel> rows;
+
+  factory MemberLevelInterface.fromJson(Map<String, dynamic> json) =>
+      _$MemberLevelInterfaceFromJson(json);
+
+  toJson() => _$MemberLevelInterfaceToJson(this);
+}

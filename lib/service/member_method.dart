@@ -19,7 +19,7 @@ Future memberInfoEdit({dynamic params}) async {
       method: 'post', data: params);
 }
 
-Future memberInfoAdd({dynamic params}) async {
+Future fetchMemberInfoAdd({dynamic params}) async {
   return requestData('${serviceUrl}/api/memberInfo/add',
       method: 'post', data: params);
 }
@@ -33,4 +33,8 @@ Future memberDetailByPreciseInfo({dynamic identity}) async {
   return requestData(
       '${serviceUrl}/api/memberInfo/detailByPreciseInfo/$identity',
       method: 'get');
+}
+
+Future fetchMemberLevel() async {
+  return requestData('${serviceUrl}/api/memberLevel/list', method: 'get');
 }
