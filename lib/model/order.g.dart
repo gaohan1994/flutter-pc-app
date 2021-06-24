@@ -307,3 +307,80 @@ Map<String, dynamic> _$CashierConfirmTransactionToJson(
   writeNotNull('unionNo', instance.unionNo);
   return val;
 }
+
+CashierRefund _$CashierRefundFromJson(Map json) {
+  return CashierRefund(
+    CashierRefundOrder.fromJson(
+        Map<String, dynamic>.from(json['order'] as Map)),
+    (json['productInfoList'] as List<dynamic>)
+        .map((e) =>
+            CashierRefundProduct.fromJson(Map<String, dynamic>.from(e as Map)))
+        .toList(),
+  );
+}
+
+Map<String, dynamic> _$CashierRefundToJson(CashierRefund instance) =>
+    <String, dynamic>{
+      'order': instance.order.toJson(),
+      'productInfoList':
+          instance.productInfoList.map((e) => e.toJson()).toList(),
+    };
+
+CashierRefundOrder _$CashierRefundOrderFromJson(Map json) {
+  return CashierRefundOrder(
+    amt: (json['amt'] as num).toDouble(),
+    orderSource: json['orderSource'] as int,
+    cashierId: json['cashierId'] as int?,
+    terminalSn: json['terminalSn'] as String?,
+    thirdPartFlag: json['thirdPartFlag'] as int?,
+    remark: json['remark'] as String?,
+  );
+}
+
+Map<String, dynamic> _$CashierRefundOrderToJson(CashierRefundOrder instance) {
+  final val = <String, dynamic>{
+    'amt': instance.amt,
+    'orderSource': instance.orderSource,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('cashierId', instance.cashierId);
+  writeNotNull('terminalSn', instance.terminalSn);
+  writeNotNull('thirdPartFlag', instance.thirdPartFlag);
+  writeNotNull('remark', instance.remark);
+  return val;
+}
+
+CashierRefundProduct _$CashierRefundProductFromJson(Map json) {
+  return CashierRefundProduct(
+    changeNumber: (json['changeNumber'] as num).toDouble(),
+    unitPrice: (json['unitPrice'] as num).toDouble(),
+    productId: json['productId'] as int,
+    productName: json['productName'] as String,
+    remark: json['remark'] as String?,
+  );
+}
+
+Map<String, dynamic> _$CashierRefundProductToJson(
+    CashierRefundProduct instance) {
+  final val = <String, dynamic>{
+    'changeNumber': instance.changeNumber,
+    'unitPrice': instance.unitPrice,
+    'productId': instance.productId,
+    'productName': instance.productName,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('remark', instance.remark);
+  return val;
+}

@@ -280,3 +280,61 @@ class CashierConfirmTransaction {
 
   toJson() => _$CashierConfirmTransactionToJson(this);
 }
+
+@JsonSerializable()
+class CashierRefund {
+  CashierRefund(this.order, this.productInfoList);
+
+  CashierRefundOrder order;
+  List<CashierRefundProduct> productInfoList;
+
+  factory CashierRefund.fromJson(Map<String, dynamic> json) =>
+      _$CashierRefundFromJson(json);
+
+  toJson() => _$CashierRefundToJson(this);
+}
+
+@JsonSerializable()
+class CashierRefundOrder {
+  CashierRefundOrder({
+    required this.amt,
+    required this.orderSource,
+    this.cashierId,
+    this.terminalSn,
+    this.thirdPartFlag,
+    this.remark,
+  });
+  double amt;
+  int orderSource;
+  int? cashierId;
+  String? terminalSn;
+  int? thirdPartFlag;
+  String? remark;
+
+  factory CashierRefundOrder.fromJson(Map<String, dynamic> json) =>
+      _$CashierRefundOrderFromJson(json);
+
+  toJson() => _$CashierRefundOrderToJson(this);
+}
+
+@JsonSerializable()
+class CashierRefundProduct {
+  CashierRefundProduct({
+    required this.changeNumber,
+    required this.unitPrice,
+    required this.productId,
+    required this.productName,
+    this.remark,
+  });
+
+  double changeNumber;
+  double unitPrice;
+  int productId;
+  String productName;
+  String? remark;
+
+  factory CashierRefundProduct.fromJson(Map<String, dynamic> json) =>
+      _$CashierRefundProductFromJson(json);
+
+  toJson() => _$CashierRefundProductToJson(this);
+}

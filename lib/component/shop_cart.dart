@@ -1,15 +1,19 @@
+import 'dart:convert';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:pc_app/common/global.dart';
 import 'package:pc_app/component/form/form_input.dart';
-import 'package:pc_app/component/form/form_input_field.dart';
 import 'package:pc_app/component/product_tag.dart';
 import 'package:pc_app/model/member.dart';
 import 'package:pc_app/model/order.dart';
 import 'package:pc_app/model/product.dart';
 import 'package:pc_app/provider/cart.dart';
 import 'package:pc_app/service/order_method.dart';
+import 'package:pc_app/service/service_url.dart';
 import 'package:provider/provider.dart';
 import './cart_stepper.dart';
 
@@ -122,7 +126,7 @@ class _ShopCartState extends State<ShopCart> {
       // 获取实际的售价
       double renderPrice = context
           .read<CartProvider>()
-          .getCurrentProductPrice(list[i], selectedMember);
+          .getCurrentProductPrice(product: list[i], member: selectedMember);
 
       cartPrice += renderPrice * list[i].sellNum!;
     }
@@ -139,51 +143,55 @@ class _ShopCartState extends State<ShopCart> {
             padding: EdgeInsets.all(12.w),
             child: Row(
               children: [
-                InkWell(
-                    onTap: () {
-                      Global.selectMemberDialog(context);
-                    },
-                    child: Container(
-                        decoration: BoxDecoration(
-                            color: selectedMember != null
-                                ? Colors.orange[100]
-                                : Colors.white,
-                            border: selectedMember != null
-                                ? Border.all(
-                                    width: 1, color: Colors.orange.shade100)
-                                : Border.all(width: 1, color: Colors.blue)),
-                        width: 95.w,
-                        height: 30.w,
-                        child: selectedMember != null
-                            ? Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                    Text(selectedMember.username,
+                Offstage(
+                  // 当type = home 的时候不隐藏
+                  offstage: widget.type == CartType.Home ? false : true,
+                  child: InkWell(
+                      onTap: () {
+                        Global.selectMemberDialog(context);
+                      },
+                      child: Container(
+                          decoration: BoxDecoration(
+                              color: selectedMember != null
+                                  ? Colors.orange[100]
+                                  : Colors.white,
+                              border: selectedMember != null
+                                  ? Border.all(
+                                      width: 1, color: Colors.orange.shade100)
+                                  : Border.all(width: 1, color: Colors.blue)),
+                          width: 95.w,
+                          height: 30.w,
+                          child: selectedMember != null
+                              ? Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                      Text(selectedMember.username,
+                                          style: TextStyle(
+                                              fontSize: 11,
+                                              color: Colors.brown.shade400)),
+                                      ProductTag(
+                                          name: selectedMember.levelName!,
+                                          color: Colors.brown.shade400)
+                                    ])
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image(
+                                        width: 12.w,
+                                        height: 12.w,
+                                        image: AssetImage(
+                                            'assets/icon_huiyuan.png')),
+                                    Container(
+                                      margin: EdgeInsets.only(left: 6),
+                                      child: Text(
+                                        '请选择会员',
                                         style: TextStyle(
-                                            fontSize: 11,
-                                            color: Colors.brown.shade400)),
-                                    ProductTag(
-                                        name: selectedMember.levelName!,
-                                        color: Colors.brown.shade400)
-                                  ])
-                            : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image(
-                                      width: 12.w,
-                                      height: 12.w,
-                                      image: AssetImage(
-                                          'assets/icon_huiyuan.png')),
-                                  Container(
-                                    margin: EdgeInsets.only(left: 6),
-                                    child: Text(
-                                      '请选择会员',
-                                      style: TextStyle(
-                                          fontSize: 11, color: Colors.blue),
-                                    ),
-                                  )
-                                ],
-                              ))),
+                                            fontSize: 11, color: Colors.blue),
+                                      ),
+                                    )
+                                  ],
+                                ))),
+                ),
                 Padding(
                   padding: const EdgeInsets.only(left: 13),
                   child: Column(
@@ -199,7 +207,7 @@ class _ShopCartState extends State<ShopCart> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            '应收金额 ',
+                            widget.type == CartType.Home ? '应收金额 ' : '应退金额 ',
                             style: textStyle,
                           ),
                           Text('￥$cartPrice',
@@ -224,17 +232,21 @@ class _ShopCartState extends State<ShopCart> {
                 {showToast('请选择要结算的商品')}
               else if (widget.type == CartType.Home)
                 {createOrder()}
+              else if (widget.type == CartType.Refund)
+                {showRefundDialog()}
             },
             child: Padding(
               padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
               child: Text(
-                '结算',
+                widget.type == CartType.Home ? '结算' : '退货',
                 style: TextStyle(fontSize: ScreenUtil().setSp(14)),
               ),
             ),
             style: ButtonStyle(
                 backgroundColor: cartNumber > 0
-                    ? MaterialStateProperty.all(Colors.red)
+                    ? widget.type == CartType.Home
+                        ? MaterialStateProperty.all(Colors.red)
+                        : MaterialStateProperty.all(Colors.blue)
                     : MaterialStateProperty.all(Colors.black12)),
           ),
         ),
@@ -265,17 +277,135 @@ class _ShopCartState extends State<ShopCart> {
         child: CartItemComponent(
             item: item, selected: itemSelected, type: widget.type));
   }
+
+  Future showRefundDialog() async {
+    // 退款总价
+    double _refundAmt = 0;
+
+    List<ProductInfo> _refundList = context.read<CartProvider>().refundCart;
+
+    // 遍历退货商品列表
+    for (int i = 0; i < _refundList.length; i++) {
+      // currentSellNum 当前商品要退的数量
+      double currentSellNum = _refundList[i].sellNum ?? 0;
+
+      // currentRefund 当前商品要退的单价
+      double currentRefund = context
+          .read<CartProvider>()
+          .getCurrentProductPrice(
+              product: _refundList[i], type: CartType.Refund);
+
+      _refundAmt += (currentSellNum * currentRefund);
+    }
+
+    Future<void> onRefund() async {
+      EasyLoading.show(status: '正在退货...');
+      // cashierRefundOrder 退货报文主体
+      // amt: 退货金额
+      // orderSource: 订单来源参考字典 order_source 0=收银机
+      CashierRefundOrder cashierRefundOrder =
+          CashierRefundOrder(amt: _refundAmt, orderSource: 0);
+
+      // cashierRefundProductList: 退货报文商品列表
+      List<CashierRefundProduct> cashierRefundProductList = [];
+
+      // 遍历退货商品列表
+      for (int i = 0; i < _refundList.length; i++) {
+        // _currentProduct 当前遍历商品
+        ProductInfo _currentProduct = _refundList[i];
+
+        // _cashierRefundProduct 创建 CashierRefundProduct 实体类
+        CashierRefundProduct _cashierRefundProduct = CashierRefundProduct(
+          changeNumber: _currentProduct.sellNum ?? 0,
+          unitPrice: _currentProduct.unitPrice ?? _currentProduct.price,
+          productId: _currentProduct.id,
+          productName: _currentProduct.name,
+        );
+
+        // 添加到退货列表中
+        cashierRefundProductList.add(_cashierRefundProduct);
+      }
+
+      // cashierRefund: 退货报文
+      CashierRefund cashierRefund =
+          CashierRefund(cashierRefundOrder, cashierRefundProductList);
+
+      var result = await fetchCashierRefund(params: cashierRefund.toJson());
+
+      EasyLoading.dismiss();
+      var resultMap = json.decode(result.toString());
+      if (resultMap['code'] == successCode) {
+        showToast('退货成功');
+        context.read<CartProvider>().emptyCart(type: CartType.Refund);
+        Navigator.pop(context, 'success');
+      } else {
+        showToast('退货失败');
+      }
+    }
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            contentPadding: EdgeInsets.all(0),
+            titlePadding: EdgeInsets.all(0),
+            title: Container(
+              padding: EdgeInsets.all(12),
+              color: Colors.blue,
+              child: Text(
+                '退款',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            children: [
+              Container(
+                  padding: const EdgeInsets.all(30),
+                  child: Column(
+                    children: <Widget>[
+                      Image(
+                          width: 123.w,
+                          height: 103.h,
+                          image: AssetImage('assets/img_refund.png')),
+                      Text(
+                        '现金退款',
+                        style: TextStyle(
+                            fontSize: ScreenUtil().setSp(12),
+                            color: Colors.black38),
+                      ),
+                      Text('￥$_refundAmt',
+                          style: TextStyle(
+                              fontSize: ScreenUtil().setSp(13),
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black)),
+                      Container(
+                        margin: EdgeInsets.only(top: 24.w),
+                        width: 100.w,
+                        height: 30.w,
+                        child: ElevatedButton(
+                            onPressed: () => onRefund(), child: Text('确定退款')),
+                      ),
+                    ],
+                  ))
+            ],
+          );
+        });
+  }
 }
 
+@immutable
 class CartItemComponent extends StatefulWidget {
-  CartItemComponent(
-      {required this.item, this.selected = false, required this.type});
+  const CartItemComponent(
+      {Key? key, required this.item, this.selected = false, required this.type})
+      : super(key: key);
 
-  ProductInfo item;
+  final ProductInfo item;
 
-  bool selected;
+  final bool selected;
 
-  CartType type;
+  final CartType type;
 
   @override
   createState() => _CartItemComponent();
@@ -295,11 +425,10 @@ class _CartItemComponent extends State<CartItemComponent> {
     MemberDetail? selectedMember = context.watch<CartProvider>().selectedMember;
 
     // 获取渲染时的售价
-    double renderPrice = context
-        .read<CartProvider>()
-        .getCurrentProductPrice(item, selectedMember);
+    double renderPrice = context.read<CartProvider>().getCurrentProductPrice(
+        product: item, member: selectedMember, type: widget.type);
 
-    // 商品是够改价
+    // 商品是否改价
     bool changedPrice = false;
     if (widget.item.unitPrice != null) {
       changedPrice = true;
@@ -317,6 +446,7 @@ class _CartItemComponent extends State<CartItemComponent> {
     );
 
     Widget _itemPrice = Column(
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // 原价
@@ -326,27 +456,37 @@ class _CartItemComponent extends State<CartItemComponent> {
               style: TextStyle(
                   fontSize: ScreenUtil().setSp(12),
                   color: Colors.black54,
-                  decoration: TextDecoration.lineThrough)),
+                  decoration: renderPrice != widget.item.price
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none)),
         ),
         Row(
           children: [
-            changedPrice ? ProductTag(name: '改价') : Container(),
-
-            renderPrice == widget.item.price
+            changedPrice
                 ? ProductTag(
-                    name: '会员价',
-                    color: Colors.orange.shade300,
-                  )
+                    name: widget.type == CartType.Home ? '改价' : '退货价',
+                    color:
+                        widget.type == CartType.Home ? Colors.red : Colors.blue)
                 : Container(),
-            // ProductTag(
-            //   name: '退货',
-            //   color: Colors.blue,
-            // ),
-            Text(
-              '￥$renderPrice',
-              style: TextStyle(
-                fontSize: ScreenUtil().setSp(12),
-                color: Colors.black54,
+            Offstage(
+              offstage: widget.type == CartType.Home &&
+                      widget.item.memberPrice != null &&
+                      renderPrice == widget.item.memberPrice
+                  ? false
+                  : true,
+              child: ProductTag(
+                name: '会员价',
+                color: Colors.orange.shade300,
+              ),
+            ),
+            Offstage(
+              offstage: renderPrice != widget.item.price ? false : true,
+              child: Text(
+                '￥$renderPrice',
+                style: TextStyle(
+                  fontSize: ScreenUtil().setSp(12),
+                  color: Colors.black54,
+                ),
               ),
             )
           ],
@@ -448,7 +588,7 @@ class _CartItemComponent extends State<CartItemComponent> {
                     ),
                     GhFormInput(
                       controller: _price,
-                      title: '价格￥',
+                      title: '价格',
                       hintText: '请输入价格',
                       rightWidget: Text('￥'),
                       textAlign: TextAlign.end,

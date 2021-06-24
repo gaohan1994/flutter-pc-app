@@ -68,7 +68,7 @@ class _CashierOrderPage extends State<CashierOrderPage> {
       // 获取实际售价
       double _currentSellPrice = context
           .read<CartProvider>()
-          .getCurrentProductPrice(list[i], selectedMember);
+          .getCurrentProductPrice(product: list[i], member: selectedMember);
 
       // 如果商品改了价那么计算下商品改价之后的差额 * 数量算在商品优惠之内
       if (_currentSellPrice != list[i].price) {
@@ -402,16 +402,22 @@ class _CashierOrderPage extends State<CashierOrderPage> {
   }
 
   Future openPriceDiscountDialog() async {
-    // 价格
-    final TextEditingController _priceController = TextEditingController(
-        text:
-            '${priceDiscount == 0 ? originalAmt : originalAmt - priceDiscount}');
+    // 整单改价弹窗价格的初始值 如果商品优惠 > 0 则减去商品优惠的部分
+    double _originPriceDiscountAmt = originalAmt - productDiscount;
 
-    // 折扣
+    // 如果之前改了价。则减去之前改价的
+    if (priceDiscount > 0) {
+      _originPriceDiscountAmt -= priceDiscount;
+    }
+
+    // 价格
+    final TextEditingController _priceController =
+        TextEditingController(text: '$_originPriceDiscountAmt');
+
+    // 折扣 计算折扣初始值: 如果改价了 那么计算改价的比例
     final TextEditingController _discountController = TextEditingController(
-        text: priceDiscount != 0
-            ? Global.formatNum(
-                (originalAmt - priceDiscount) / originalAmt * 100, 2)
+        text: priceDiscount > 0
+            ? Global.formatNum(_originPriceDiscountAmt / originalAmt * 100, 2)
             : '100');
 
     final option = await showDialog(
@@ -488,8 +494,7 @@ class _CashierOrderPage extends State<CashierOrderPage> {
                             width: ScreenUtil().setWidth(100),
                             height: ScreenUtil().setWidth(30),
                             child: OutlinedButton(
-                                onPressed: () =>
-                                    Navigator.pop(context, 'confirm'),
+                                onPressed: () => Navigator.pop(context),
                                 child: Text('取消')),
                           ),
                           Container(
@@ -511,10 +516,19 @@ class _CashierOrderPage extends State<CashierOrderPage> {
         });
 
     if (option == 'confirm') {
-      setState(() {
-        priceDiscount = double.parse(Global.formatNum(
-            originalAmt - double.parse(_priceController.text), 2));
-      });
+      // dialogPrice 点击确定时输入框的值
+      double dialogPrice = double.parse(_priceController.text);
+      if (dialogPrice != _originPriceDiscountAmt) {
+        // 用户点击确定，计算价格，如果改价 > 0 则赋值给改价优惠
+        setState(() {
+          priceDiscount = double.parse(
+              Global.formatNum(_originPriceDiscountAmt - dialogPrice, 2));
+        });
+      }
+      // setState(() {
+      //   priceDiscount = double.parse(Global.formatNum(
+      //       originalAmt - double.parse(_priceController.text), 2));
+      // });
     }
   }
 

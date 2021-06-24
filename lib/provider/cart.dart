@@ -23,12 +23,15 @@ class CartProvider extends ChangeNotifier {
   List<CartDelay> delayList = [];
 
   // 获取传入商品计算时的售价
-  double getCurrentProductPrice(ProductInfo product, MemberDetail? member) {
+  double getCurrentProductPrice(
+      {required ProductInfo product,
+      MemberDetail? member,
+      CartType? type = CartType.Home}) {
     // 当前商品的售价
     double _currentSellPrice = product.price;
 
-    // 如果选择了会员则使用会员价
-    if (member != null) {
+    // 如果是开单且有会员则使用会员价
+    if (type == CartType.Home && member != null) {
       _currentSellPrice = product.memberPrice ?? product.price;
     }
 
@@ -163,8 +166,10 @@ class CartProvider extends ChangeNotifier {
       refundCart = [];
     }
 
-    // 清空会员
-    selectedMember = null;
+    if (type == CartType.Home) {
+      // 如果是收银台则清空会员
+      selectedMember = null;
+    }
 
     notifyListeners();
   }

@@ -14,6 +14,8 @@ import 'package:pc_app/component/shop_cart.dart';
 import 'package:pc_app/component/slider_type.dart';
 import 'package:pc_app/model/order.dart';
 import 'package:pc_app/model/product.dart';
+import 'package:pc_app/pages/cashier_order.dart';
+import 'package:pc_app/provider/cart.dart';
 import 'package:pc_app/provider/home.dart';
 import 'package:pc_app/provider/order.dart';
 import 'package:pc_app/provider/report.dart';
@@ -72,7 +74,10 @@ class _RefundPageState extends State<RefundPage> {
         children: [
           Wrap(
               children: renderProducts.map((item) {
-            return Product(item: item);
+            return Product(
+              item: item,
+              type: CartType.Refund,
+            );
           }).toList())
         ],
       );
@@ -88,7 +93,10 @@ class _RefundPageState extends State<RefundPage> {
     return Scaffold(
         body: Row(
       children: [
-        ShopCart(title: '退货商品'),
+        ShopCart(
+          title: '退货商品',
+          type: CartType.Refund,
+        ),
         Expanded(
           child: Column(
             children: [

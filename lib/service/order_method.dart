@@ -16,3 +16,8 @@ Future cashierOrder({params}) async {
 Future cashierConfirm({params}) async {
   return requestData('${serviceUrl}/api/cashier/confirm', data: params);
 }
+
+Future fetchCashierRefund({params}) async {
+  return requestData('${serviceUrl}/api/cashier/refund',
+      data: params, method: 'post');
+}

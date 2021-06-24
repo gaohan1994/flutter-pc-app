@@ -38,7 +38,9 @@ class _ProductState extends State<Product> {
   String _remark = '';
 
   void onProductClick() {
-    context.read<CartProvider>().addProduct(product: widget.item);
+    context
+        .read<CartProvider>()
+        .addProduct(product: widget.item, type: widget.type);
   }
 
   @override

@@ -79,7 +79,10 @@ class _HomePageState extends State<HomePage> {
         ),
         body: Row(
           children: [
-            ShopCart(title: '购物车'),
+            ShopCart(
+              title: '购物车',
+              type: CartType.Home,
+            ),
             Expanded(
               child: Column(
                 children: [
