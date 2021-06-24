@@ -44,7 +44,7 @@ class _OrderPageState extends State<OrderPage> {
       context.read<OrderPageProvider>().getOrderList();
 
       // 初始化今日报表
-      context.read<ReportProvider>().getReportToday(context);
+      // context.read<ReportProvider>().getReportToday(context);
     });
   }
 

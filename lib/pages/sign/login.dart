@@ -60,7 +60,7 @@ class _LoginPage extends State<LoginPage> {
             await sp.setString('token', user.token.toString());
         // print('保存token是否成功: ${saveTokenResult}');
         context.read<ProfileChangeNotifier>().user = user;
-        Application.router?.navigateTo(context, '/');
+        Application.router?.navigateTo(context, '/', replace: true);
       }
     } catch (e) {
       showToast(e.toString());

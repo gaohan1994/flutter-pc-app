@@ -132,8 +132,11 @@ class _HomePageState extends State<HomePage> {
     var selectedSecondType =
         context.watch<HomePageProvider>().selectedSecondType;
 
-    ProductType selectedType =
-        types.firstWhere((element) => element.id == selectedTypeId);
+    ProductType? selectedType;
+    if (types.isNotEmpty) {
+      selectedType =
+          types.firstWhere((element) => element.id == selectedTypeId);
+    }
 
     final selectedBorder =
         BoxDecoration(border: Border.all(width: 1, color: Colors.blue));
@@ -145,7 +148,7 @@ class _HomePageState extends State<HomePage> {
     final normalTextStyle =
         TextStyle(fontSize: ScreenUtil().setSp(11), color: Colors.black26);
 
-    if (selectedType.subCategory!.isNotEmpty) {
+    if (selectedType != null && selectedType.subCategory!.isNotEmpty) {
       List<Widget> renderSelctedTypes = [
         InkWell(
           onTap: () {
@@ -172,7 +175,7 @@ class _HomePageState extends State<HomePage> {
           onTap: () {
             // 如果选中当前二级分类则传入
             context.read<HomePageProvider>().switchSecondProductType(
-                secondType: selectedType.subCategory![i]);
+                secondType: selectedType?.subCategory![i]);
           },
           child: Container(
             alignment: Alignment.center,
