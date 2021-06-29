@@ -12,7 +12,7 @@ class ColorItem extends StatelessWidget {
   ColorItem({
     this.title = '',
     this.detail = '',
-    this.titleStyle = const TextStyle(color: Colors.white, fontSize: 10),
+    this.titleStyle = const TextStyle(color: Colors.white, fontSize: 13),
     this.detailStyle = const TextStyle(color: Colors.white),
     required this.color,
     this.padding = const EdgeInsets.fromLTRB(14, 11, 14, 11),

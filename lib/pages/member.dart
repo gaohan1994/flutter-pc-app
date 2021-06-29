@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pc_app/component/color_item.dart';
 import 'package:pc_app/component/empty_view.dart';
 import 'package:pc_app/component/list_item.dart';
 import 'package:pc_app/component/search.dart';
+import 'package:pc_app/pages/component.dart';
 import 'package:pc_app/pages/member/member_edit.dart';
 import 'package:pc_app/pages/member_detail.dart';
 import 'package:pc_app/provider/member.dart';
@@ -128,70 +130,62 @@ class _MemberPage extends State<MemberPage> {
     var memberList = context.watch<MemberProvider>().memberList;
 
     if (memberList.isNotEmpty) {
-      return ListView.builder(
-          itemCount: 5,
-          itemBuilder: (BuildContext context, index) {
-            return MemberItem(item: memberList[index]);
-          });
+      return EasyRefresh(
+          onLoad: () async {
+            await context.read<MemberProvider>().loadMemberList();
+          },
+          footer: ClassicalFooter(
+              bgColor: Colors.white,
+              textColor: Colors.black38,
+              noMoreText: '加载完成',
+              loadReadyText: '上拉加载',
+              loadText: '上拉加载更多',
+              loadingText: '加载中...',
+              loadedText: '加载成功',
+              showInfo: false),
+          child: ListView.builder(
+              itemCount: memberList.length,
+              itemBuilder: (BuildContext context, index) {
+                return MemberItem(item: memberList[index]);
+              }));
     } else {
       return EmptyView(emptyText: '暂无数据');
     }
   }
 
   Widget _buildFilter() {
-    return Row(
-      children: [
-        _buildFilterItem('累计消费', 'totalAmount'),
-        _buildFilterItem('上次消费时间', 'lastPayTime'),
-        _buildFilterItem('注册时间', 'createTime'),
-      ],
-    );
-  }
-
-  Widget _buildFilterItem(title, value) {
     var filterWay = context.watch<MemberProvider>().filterWay;
     var filterBy = context.watch<MemberProvider>().filterBy;
-    bool selected = value == filterWay;
-
-    Widget _current = selected
-        ? filterBy == 'desc'
-            ? Image(
-                width: 7.w,
-                height: 10.w,
-                image: AssetImage('assets/icon_jiangxu.png'))
-            : Image(
-                width: 7.w,
-                height: 10.w,
-                image: AssetImage('assets/icon_paixu.png'))
-        : Image(
-            width: 7.w,
-            height: 10.w,
-            image: AssetImage('assets/icon_moren_paixu.png'));
-
-    return Expanded(
-        child: InkWell(
-      onTap: () {
-        onFilterClick(value);
-      },
-      child: Container(
-        height: 25.w,
-        decoration: BoxDecoration(
-            border: Border.all(
-                width: 1, color: selected ? Colors.blue : Colors.black12)),
-        alignment: Alignment.center,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(title,
-                style: TextStyle(color: selected ? Colors.blue : Colors.black)),
-            Container(
-              margin: EdgeInsets.only(left: 10.w),
-              child: _current,
-            ),
-          ],
-        ),
-      ),
-    ));
+    return Row(
+      children: [
+        FilterItem(
+            title: '累计消费',
+            value: 'totalAmount',
+            onPressed: (value) {
+              onFilterClick(value);
+            },
+            direction:
+                filterBy == 'desc' ? FilterDirection.down : FilterDirection.up,
+            selected: filterWay == 'totalAmount'),
+        FilterItem(
+            title: '上次消费时间',
+            value: 'lastPayTime',
+            onPressed: (value) {
+              onFilterClick(value);
+            },
+            direction:
+                filterBy == 'desc' ? FilterDirection.down : FilterDirection.up,
+            selected: filterWay == 'lastPayTime'),
+        FilterItem(
+            title: '注册时间',
+            value: 'createTime',
+            onPressed: (value) {
+              onFilterClick(value);
+            },
+            direction:
+                filterBy == 'desc' ? FilterDirection.down : FilterDirection.up,
+            selected: filterWay == 'createTime'),
+      ],
+    );
   }
 }

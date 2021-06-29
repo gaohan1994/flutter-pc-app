@@ -6,6 +6,7 @@ import 'package:pc_app/provider/global.dart';
 import 'package:pc_app/provider/home.dart';
 import 'package:pc_app/provider/member.dart';
 import 'package:pc_app/provider/order.dart';
+import 'package:pc_app/provider/product.dart';
 import 'package:pc_app/provider/report.dart';
 import 'package:pc_app/provider/route.dart';
 import 'package:pc_app/route/application.dart';
@@ -50,6 +51,9 @@ class MyApp extends StatelessWidget {
     // 购物车 provider
     var cartProvider = CartProvider();
 
+    // 商品 provider
+    var productProvider = ProductProvider();
+
     // 初始化screenUtil
     return ScreenUtilInit(
       designSize: const Size(960, 540),
@@ -67,6 +71,7 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(create: (_) => profileChangeNotifier),
             ChangeNotifierProvider(create: (_) => memberProvider),
             ChangeNotifierProvider(create: (_) => cartProvider),
+            ChangeNotifierProvider(create: (_) => productProvider),
           ],
               child: MaterialApp(
                   title: '星亿腾',

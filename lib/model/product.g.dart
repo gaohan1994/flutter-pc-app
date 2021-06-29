@@ -23,30 +23,51 @@ Map<String, dynamic> _$ProductListToJson(ProductList instance) =>
 
 ProductInfo _$ProductInfoFromJson(Map json) {
   return ProductInfo(
-    json['barcode'] as String?,
-    json['brand'] as String?,
-    json['createTime'] as String?,
-    json['customer'] as int?,
     json['id'] as int,
-    (json['memberPrice'] as num?)?.toDouble(),
     json['name'] as String,
-    (json['number'] as num?)?.toDouble(),
     (json['price'] as num).toDouble(),
-    (json['saleNumber'] as num?)?.toDouble(),
-    json['standard'] as String?,
-    json['status'] as int?,
-    json['typeId'] as int?,
-    json['typeName'] as String?,
-    json['unit'] as String?,
   )
+    ..number = (json['number'] as num?)?.toDouble()
     ..pic = json['pic'] as String?
+    ..barcode = json['barcode'] as String?
+    ..brand = json['brand'] as String?
+    ..createTime = json['createTime'] as String?
+    ..customer = json['customer'] as int?
+    ..memberPrice = (json['memberPrice'] as num?)?.toDouble()
+    ..saleNumber = (json['saleNumber'] as num?)?.toDouble()
+    ..standard = json['standard'] as String?
+    ..status = json['status'] as int?
+    ..typeName = json['typeName'] as String?
+    ..unit = json['unit'] as String?
     ..saleType = json['saleType'] as int?
     ..sellNum = (json['sellNum'] as num?)?.toDouble()
     ..remark = json['remark'] as String?
     ..pointDiscount = (json['pointDiscount'] as num?)?.toDouble()
     ..unitPrice = (json['unitPrice'] as num?)?.toDouble()
     ..priceChangeFlag = json['priceChangeFlag'] as bool?
-    ..productName = json['productName'] as String?;
+    ..productName = json['productName'] as String?
+    ..activityInfos = json['activityInfos'] as List<dynamic>?
+    ..enableMemberDiscount = json['enableMemberDiscount'] as bool?
+    ..pictures =
+        (json['pictures'] as List<dynamic>?)?.map((e) => e as String).toList()
+    ..createBy = json['createBy'] as String?
+    ..customInfo = json['customInfo'] as String?
+    ..description = json['description'] as String?
+    ..nameAbbr = json['nameAbbr'] as String?
+    ..shareImagePath = json['shareImagePath'] as String?
+    ..supplierName = json['supplierName'] as String?
+    ..updateBy = json['updateBy'] as String?
+    ..updateTime = json['updateTime'] as String?
+    ..cost = (json['cost'] as num?)?.toDouble()
+    ..isDeleted = json['isDeleted'] as int?
+    ..limitNum = (json['limitNum'] as num?)?.toDouble()
+    ..merchantId = json['merchantId'] as int?
+    ..perCost = (json['perCost'] as num?)?.toDouble()
+    ..supplierId = json['supplierId'] as int?
+    ..type = json['type'] as int?
+    ..wholesalePrice = (json['wholesalePrice'] as num?)?.toDouble()
+    ..isHelpPool = json['isHelpPool'] as int?
+    ..imgPaths = json['imgPaths'] as String?;
 }
 
 Map<String, dynamic> _$ProductInfoToJson(ProductInfo instance) {
@@ -72,7 +93,6 @@ Map<String, dynamic> _$ProductInfoToJson(ProductInfo instance) {
   writeNotNull('saleNumber', instance.saleNumber);
   writeNotNull('standard', instance.standard);
   writeNotNull('status', instance.status);
-  writeNotNull('typeId', instance.typeId);
   writeNotNull('typeName', instance.typeName);
   writeNotNull('unit', instance.unit);
   writeNotNull('saleType', instance.saleType);
@@ -82,6 +102,27 @@ Map<String, dynamic> _$ProductInfoToJson(ProductInfo instance) {
   writeNotNull('unitPrice', instance.unitPrice);
   writeNotNull('priceChangeFlag', instance.priceChangeFlag);
   writeNotNull('productName', instance.productName);
+  writeNotNull('activityInfos', instance.activityInfos);
+  writeNotNull('enableMemberDiscount', instance.enableMemberDiscount);
+  writeNotNull('pictures', instance.pictures);
+  writeNotNull('createBy', instance.createBy);
+  writeNotNull('customInfo', instance.customInfo);
+  writeNotNull('description', instance.description);
+  writeNotNull('nameAbbr', instance.nameAbbr);
+  writeNotNull('shareImagePath', instance.shareImagePath);
+  writeNotNull('supplierName', instance.supplierName);
+  writeNotNull('updateBy', instance.updateBy);
+  writeNotNull('updateTime', instance.updateTime);
+  writeNotNull('cost', instance.cost);
+  writeNotNull('isDeleted', instance.isDeleted);
+  writeNotNull('limitNum', instance.limitNum);
+  writeNotNull('merchantId', instance.merchantId);
+  writeNotNull('perCost', instance.perCost);
+  writeNotNull('supplierId', instance.supplierId);
+  writeNotNull('type', instance.type);
+  writeNotNull('wholesalePrice', instance.wholesalePrice);
+  writeNotNull('isHelpPool', instance.isHelpPool);
+  writeNotNull('imgPaths', instance.imgPaths);
   return val;
 }
 

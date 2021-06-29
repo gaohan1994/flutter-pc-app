@@ -5,7 +5,7 @@ import 'package:pc_app/provider/global.dart';
 import 'package:pc_app/route/application.dart';
 import 'package:provider/provider.dart';
 
-const serviceUrl = 'http://124.71.129.167:8081/inventory-app';
+const serviceUrl = 'http://124.71.129.167:21280/inventory-app';
 
 const successCode = 'response.success';
 

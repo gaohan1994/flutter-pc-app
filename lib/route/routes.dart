@@ -33,5 +33,8 @@ class Routes {
 
     // 登录页面
     router.define(login, handler: loginHandler);
+
+    // 更多->商品
+    router.define('/product', handler: handlerProduct);
   }
 }

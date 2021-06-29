@@ -3,8 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pc_app/component/product_tag.dart';
 import 'package:pc_app/model/member.dart';
 import 'package:pc_app/model/order.dart';
+import 'package:pc_app/model/product.dart';
 import 'package:pc_app/provider/member.dart';
 import 'package:pc_app/provider/order.dart';
+import 'package:pc_app/provider/product.dart';
 import 'package:provider/provider.dart';
 
 class ListItem extends StatelessWidget {
@@ -15,15 +17,19 @@ class ListItem extends StatelessWidget {
   final Function? onPress;
   final String? img;
   final List<Widget>? tags;
+  final String? netimg;
 
-  ListItem(
-      {this.title = '',
+  const ListItem(
+      {Key? key,
+      this.title = '',
       this.detail = '',
       this.suffix = '',
       this.selected = false,
       this.img,
+      this.netimg,
       this.onPress,
-      this.tags = const []});
+      this.tags = const []})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,12 +50,26 @@ class ListItem extends StatelessWidget {
           children: [
             Row(
               children: [
-                Container(
-                  margin: EdgeInsets.only(right: 6),
-                  child: Image(
-                    image: AssetImage(img ?? 'assets/icon_alipay.png'),
-                    width: 22.w,
-                    height: 22.w,
+                Offstage(
+                  offstage: netimg != null && netimg!.isNotEmpty ? false : true,
+                  child: Container(
+                    margin: EdgeInsets.only(right: 6),
+                    child: Image.network(
+                      netimg ?? '',
+                      width: 44.w,
+                      height: 44.w,
+                    ),
+                  ),
+                ),
+                Offstage(
+                  offstage: img != null ? false : true,
+                  child: Container(
+                    margin: EdgeInsets.only(right: 6),
+                    child: Image(
+                      image: AssetImage(img ?? 'assets/icon_alipay.png'),
+                      width: 22.w,
+                      height: 22.w,
+                    ),
                   ),
                 ),
                 Column(
@@ -58,8 +78,15 @@ class ListItem extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text('${title}',
-                            style: TextStyle(fontSize: ScreenUtil().setSp(12))),
+                        Container(
+                          constraints: BoxConstraints(
+                            maxWidth: 200.w,
+                          ),
+                          child: Text('${title}',
+                              maxLines: 2,
+                              style:
+                                  TextStyle(fontSize: ScreenUtil().setSp(12))),
+                        ),
                         Row(
                           children: tags!,
                         )
@@ -99,15 +126,18 @@ class MemberItem extends StatelessWidget {
     // 点击订单触发请求详情函数
     var onPressedHandle = context.read<MemberProvider>().changeSelectedMember;
 
-    Widget itemTag =
-        ProductTag(name: item.levelName, color: Colors.orange.shade200);
-    // 订单退货标记
+    List<Widget> tags = [];
 
+    if (item.levelName != null) {
+      tags.add(ProductTag(name: item.levelName, color: Colors.orange.shade200));
+    }
+
+    // 订单退货标记
     return ListItem(
       onPress: () => onPressedHandle(item),
       selected: currentOrderSelected,
       title: item.username,
-      tags: [itemTag],
+      tags: tags,
       detail: item.phone,
       suffix: '￥${item.totalAmount}',
       img: 'assets/huiyuan_user.png',
@@ -151,6 +181,28 @@ class OrderItem extends StatelessWidget {
       tags: [orderTransflagTag, orderRefundTag],
       detail: item.createTime,
       suffix: '￥${item.amt}',
+    );
+  }
+}
+
+@immutable
+class ProductRowItem extends StatelessWidget {
+  const ProductRowItem({Key? key, required this.item, this.selected = false})
+      : super(key: key);
+
+  final ProductInfo item;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    var onPressedHandle = context.read<ProductProvider>().getProductDetail;
+    return ListItem(
+      selected: selected,
+      onPress: () => onPressedHandle(item.id),
+      title: item.name,
+      netimg: item.pic ?? '',
+      detail: '￥${item.price}',
+      suffix: '${item.number} ${item.unit ?? '个'}',
     );
   }
 }

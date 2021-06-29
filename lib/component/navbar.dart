@@ -54,8 +54,7 @@ class _Navbar extends State<Navbar> {
       {"title": '订单', "type": 1, "icon": 'assets/icon_menu_order.png'},
       {"title": '会员', "type": 2, "icon": 'assets/icon_menu_member.png'},
       {"title": '退货', "type": 3, "icon": 'assets/icon_menu_order.png'},
-      {"title": '进销存', "type": 4, "icon": 'assets/icon_menu_purchase.png'},
-      {"title": '更多', "type": 5, "icon": 'assets/icon_menu_more.png'},
+      {"title": '更多', "type": 4, "icon": 'assets/icon_menu_more.png'},
     ];
 
     return AppBar(

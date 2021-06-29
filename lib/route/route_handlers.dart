@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluro/fluro.dart';
+import 'package:pc_app/pages/more/product.dart';
 import '../pages/order.dart';
 import '../pages/sign/login.dart';
 import '../pages/index.dart';
@@ -19,4 +20,9 @@ Handler orderHandler = Handler(
 Handler loginHandler = Handler(handlerFunc:
     ((BuildContext? context, Map<String, List<String>> parameters) {
   return LoginPage();
+}));
+
+Handler handlerProduct = Handler(handlerFunc:
+    ((BuildContext? context, Map<String, List<String>> parameters) {
+  return ProductPage();
 }));

@@ -9,3 +9,8 @@ Future productInfoType({dynamic params}) async {
   return requestData('${serviceUrl}/api/product/productInfo/type',
       data: params, method: 'get');
 }
+
+Future fetchProductDetail({dynamic id}) async {
+  return requestData('${serviceUrl}/api/product/productInfo/detail/$id',
+      method: 'get');
+}

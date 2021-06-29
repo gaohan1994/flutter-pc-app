@@ -33,10 +33,10 @@ class ContentItem extends StatelessWidget {
   }
 }
 
-class MemberContent extends StatelessWidget {
-  final Widget? child;
+class DetailContent extends StatelessWidget {
+  const DetailContent({this.child});
 
-  MemberContent({this.child});
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {

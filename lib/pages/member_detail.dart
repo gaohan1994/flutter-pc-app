@@ -154,25 +154,25 @@ class MemberDetailPage extends StatelessWidget {
   Widget _buildContent(int index, MemberDetail memberDetail) {
     return Column(
       children: [
-        MemberContent(
+        DetailContent(
           child: Column(
             children: [
-              MemberContent.buildSection(items: [
+              DetailContent.buildSection(items: [
                 ContentItem(title: '卡号', value: '${memberDetail.cardNo}'),
                 ContentItem(title: '人脸识别', value: '已识别')
               ]),
-              MemberContent.buildSection(items: [
+              DetailContent.buildSection(items: [
                 ContentItem(
                     title: '性别',
                     value: '${memberDetail.sex == '0' ? '先生' : '女士'}'),
                 ContentItem(
                     title: '开卡卡店', value: '${memberDetail.merchantName}')
               ]),
-              MemberContent.buildSection(items: [
+              DetailContent.buildSection(items: [
                 ContentItem(title: '生日', value: '${memberDetail.birthDate}'),
                 ContentItem(title: '开卡时间', value: '${memberDetail.createTime}')
               ]),
-              MemberContent.buildSection(items: [
+              DetailContent.buildSection(items: [
                 ContentItem(
                     title: '状态',
                     value: '${memberDetail.status == 1 ? '正常' : '注销'}')
@@ -182,7 +182,7 @@ class MemberDetailPage extends StatelessWidget {
         ),
         Container(
           margin: EdgeInsets.only(top: 10),
-          child: MemberContent(
+          child: DetailContent(
             child: Column(
               children: [
                 ContentItem(

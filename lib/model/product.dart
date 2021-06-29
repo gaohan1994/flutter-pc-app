@@ -19,22 +19,9 @@ class ProductList {
 @JsonSerializable()
 class ProductInfo {
   ProductInfo(
-    this.barcode,
-    this.brand,
-    this.createTime,
-    this.customer,
     this.id,
-    this.memberPrice,
     this.name,
-    this.number,
-    // this.pic,
     this.price,
-    this.saleNumber,
-    this.standard,
-    this.status,
-    this.typeId,
-    this.typeName,
-    this.unit,
   );
 
   int id;
@@ -50,7 +37,6 @@ class ProductInfo {
   double? saleNumber;
   String? standard;
   int? status;
-  int? typeId;
   String? typeName;
   String? unit;
   int? saleType;
@@ -68,10 +54,36 @@ class ProductInfo {
   // 商品名称,无码商品需要填写
   String? productName;
 
+  List<dynamic>? activityInfos;
+  bool? enableMemberDiscount;
+  List<String>? pictures;
+  String? createBy;
+  String? customInfo;
+  String? description;
+  String? nameAbbr;
+  String? shareImagePath;
+  String? supplierName;
+  String? updateBy;
+  String? updateTime;
+  double? cost;
+  int? isDeleted;
+  double? limitNum;
+  int? merchantId;
+  double? perCost;
+  int? supplierId;
+  int? type;
+  double? wholesalePrice;
+  int? isHelpPool;
+  String? imgPaths;
+
   factory ProductInfo.fromJson(Map<String, dynamic> json) =>
       _$ProductInfoFromJson(json);
 
   toJson() => _$ProductInfoToJson(this);
+}
+
+class ProductInfoDetail {
+  ProductInfoDetail();
 }
 
 @JsonSerializable()

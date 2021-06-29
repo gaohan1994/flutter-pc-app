@@ -67,16 +67,14 @@ class MemberProvider extends ChangeNotifier {
   Future getMemberList() async {
     var params = {
       "pageNum": 1,
-      "pageSize": "${pageSize}",
-      // "orderByColumn": "${filterWay} ${filterBy}"
+      "pageSize": "$pageSize",
+      // "orderByColumn": "$filterWay $filterBy"
     };
 
     if (searchValue.isNotEmpty) {
       params['identity'] = searchValue;
     }
-
     print('getMemberList 请求列表参数: ${params.toString()}');
-
     var result = await fetchMemberList(params: params);
     var resultMap = json.decode(result.toString());
 
@@ -90,6 +88,28 @@ class MemberProvider extends ChangeNotifier {
 
     total = listTotal;
     memberList = listRows;
+
+    notifyListeners();
+  }
+
+  Future loadMemberList() async {
+    var params = {
+      "pageNum": page + 1,
+      "pageSize": "$pageSize",
+      // "orderByColumn": "$filterWay $filterBy"
+    };
+
+    if (searchValue.isNotEmpty) {
+      params['identity'] = searchValue;
+    }
+    var result = await fetchMemberList(params: params);
+    var resultMap = json.decode(result.toString());
+
+    var listData = MemberList.fromJson(resultMap['data']);
+    var listRows = listData.rows;
+
+    page++;
+    memberList.addAll(listRows);
 
     notifyListeners();
   }
