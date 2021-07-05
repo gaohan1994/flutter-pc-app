@@ -18,6 +18,10 @@ class ProductProvider extends ChangeNotifier {
   String searchValue = '';
   // 商品详情
   ProductInfo? productDetail;
+  // 供应商列表
+  List<ProductSupplier> productSupplierList = [];
+  // 筛选选中的分类
+  List<ProductType> selectedFilterType = [];
 
   // 排序方式
   String filterWay = 'amount';
@@ -32,6 +36,16 @@ class ProductProvider extends ChangeNotifier {
   void setFilterBy(by) {
     filterBy = by;
     getProducts();
+    notifyListeners();
+  }
+
+  void resetSelectedFilterType() {
+    selectedFilterType = [];
+    notifyListeners();
+  }
+
+  void changeSelectedFilterType(ProductType type) {
+    selectedFilterType = [type];
     notifyListeners();
   }
 
@@ -54,7 +68,7 @@ class ProductProvider extends ChangeNotifier {
     productList = productRows;
 
     if (productRows.isNotEmpty) {
-      getProductDetail(productRows[0].id);
+      getProductDetail(productRows[0].id!);
     }
 
     page = 1;
@@ -86,9 +100,19 @@ class ProductProvider extends ChangeNotifier {
   Future getProductDetail(int id) async {
     var result = await fetchProductDetail(id: id);
     var resultMap = json.decode(result.toString());
-    print('resultMap: ${resultMap}');
     var detail = ProductInfo.fromJson(resultMap['data']);
     productDetail = detail;
     notifyListeners();
+  }
+
+  Future getProductSupplier() async {
+    var result = await fetchSupplier();
+    var resultMap = json.decode(result.toString());
+
+    if (resultMap['code'] == successCode) {
+      List<ProductSupplier> data = ProductSupplierList.fromJson(resultMap).data;
+      productSupplierList = data;
+      notifyListeners();
+    }
   }
 }

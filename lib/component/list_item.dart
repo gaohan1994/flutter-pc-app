@@ -50,16 +50,15 @@ class ListItem extends StatelessWidget {
           children: [
             Row(
               children: [
-                Offstage(
-                  offstage: netimg != null && netimg!.isNotEmpty ? false : true,
-                  child: Container(
-                    margin: EdgeInsets.only(right: 6),
-                    child: Image.network(
-                      netimg ?? '',
-                      width: 44.w,
-                      height: 44.w,
-                    ),
-                  ),
+                Container(
+                  margin: EdgeInsets.only(right: 6.w),
+                  child: netimg != null && netimg!.isNotEmpty
+                      ? Image.network(
+                          netimg ?? '',
+                          width: 44.w,
+                          height: 44.w,
+                        )
+                      : Container(),
                 ),
                 Offstage(
                   offstage: img != null ? false : true,
@@ -198,7 +197,7 @@ class ProductRowItem extends StatelessWidget {
     var onPressedHandle = context.read<ProductProvider>().getProductDetail;
     return ListItem(
       selected: selected,
-      onPress: () => onPressedHandle(item.id),
+      onPress: () => onPressedHandle(item.id!),
       title: item.name,
       netimg: item.pic ?? '',
       detail: '￥${item.price}',

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pc_app/provider/product.dart';
 import 'package:pc_app/route/application.dart';
+import 'package:provider/provider.dart';
 
 class MoreItem {
   MoreItem(this.title, this.icon);
@@ -19,6 +21,13 @@ class _MorePage extends State<MorePage> {
       print('sp');
       Application.router?.navigateTo(context, '/product');
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    context.read<ProductProvider>().getProductSupplier();
   }
 
   @override

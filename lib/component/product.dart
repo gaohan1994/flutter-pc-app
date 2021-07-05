@@ -63,7 +63,7 @@ class _ProductState extends State<Product> {
         margin: const EdgeInsets.only(bottom: 4, right: 7),
         child: Column(
           children: [
-            widget.item.pic != null && widget.item.pic != ""
+            widget.item.pic != null && widget.item.pic!.isNotEmpty
                 ? Image.network(
                     widget.item.pic ?? '',
                     fit: BoxFit.cover,

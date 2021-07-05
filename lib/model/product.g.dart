@@ -23,58 +23,55 @@ Map<String, dynamic> _$ProductListToJson(ProductList instance) =>
 
 ProductInfo _$ProductInfoFromJson(Map json) {
   return ProductInfo(
-    json['id'] as int,
-    json['name'] as String,
-    (json['price'] as num).toDouble(),
-  )
-    ..number = (json['number'] as num?)?.toDouble()
-    ..pic = json['pic'] as String?
-    ..barcode = json['barcode'] as String?
-    ..brand = json['brand'] as String?
-    ..createTime = json['createTime'] as String?
-    ..customer = json['customer'] as int?
-    ..memberPrice = (json['memberPrice'] as num?)?.toDouble()
-    ..saleNumber = (json['saleNumber'] as num?)?.toDouble()
-    ..standard = json['standard'] as String?
-    ..status = json['status'] as int?
-    ..typeName = json['typeName'] as String?
-    ..unit = json['unit'] as String?
-    ..saleType = json['saleType'] as int?
-    ..sellNum = (json['sellNum'] as num?)?.toDouble()
-    ..remark = json['remark'] as String?
-    ..pointDiscount = (json['pointDiscount'] as num?)?.toDouble()
-    ..unitPrice = (json['unitPrice'] as num?)?.toDouble()
-    ..priceChangeFlag = json['priceChangeFlag'] as bool?
-    ..productName = json['productName'] as String?
-    ..activityInfos = json['activityInfos'] as List<dynamic>?
-    ..enableMemberDiscount = json['enableMemberDiscount'] as bool?
-    ..pictures =
-        (json['pictures'] as List<dynamic>?)?.map((e) => e as String).toList()
-    ..createBy = json['createBy'] as String?
-    ..customInfo = json['customInfo'] as String?
-    ..description = json['description'] as String?
-    ..nameAbbr = json['nameAbbr'] as String?
-    ..shareImagePath = json['shareImagePath'] as String?
-    ..supplierName = json['supplierName'] as String?
-    ..updateBy = json['updateBy'] as String?
-    ..updateTime = json['updateTime'] as String?
-    ..cost = (json['cost'] as num?)?.toDouble()
-    ..isDeleted = json['isDeleted'] as int?
-    ..limitNum = (json['limitNum'] as num?)?.toDouble()
-    ..merchantId = json['merchantId'] as int?
-    ..perCost = (json['perCost'] as num?)?.toDouble()
-    ..supplierId = json['supplierId'] as int?
-    ..type = json['type'] as int?
-    ..wholesalePrice = (json['wholesalePrice'] as num?)?.toDouble()
-    ..isHelpPool = json['isHelpPool'] as int?
-    ..imgPaths = json['imgPaths'] as String?;
+    id: json['id'] as int?,
+    name: json['name'] as String,
+    price: (json['price'] as num).toDouble(),
+    number: (json['number'] as num?)?.toDouble(),
+    pic: json['pic'] as String?,
+    barcode: json['barcode'] as String?,
+    brand: json['brand'] as String?,
+    createTime: json['createTime'] as String?,
+    customer: json['customer'] as int?,
+    memberPrice: (json['memberPrice'] as num?)?.toDouble(),
+    saleNumber: (json['saleNumber'] as num?)?.toDouble(),
+    standard: json['standard'] as String?,
+    status: json['status'] as int?,
+    typeName: json['typeName'] as String?,
+    unit: json['unit'] as String?,
+    saleType: json['saleType'] as int?,
+    activityInfos: json['activityInfos'] as List<dynamic>?,
+    enableMemberDiscount: json['enableMemberDiscount'] as bool?,
+    pictures:
+        (json['pictures'] as List<dynamic>?)?.map((e) => e as String).toList(),
+    createBy: json['createBy'] as String?,
+    customInfo: json['customInfo'] as String?,
+    description: json['description'] as String?,
+    nameAbbr: json['nameAbbr'] as String?,
+    shareImagePath: json['shareImagePath'] as String?,
+    supplierName: json['supplierName'] as String?,
+    updateBy: json['updateBy'] as String?,
+    updateTime: json['updateTime'] as String?,
+    cost: (json['cost'] as num?)?.toDouble(),
+    isDeleted: json['isDeleted'] as int?,
+    limitNum: (json['limitNum'] as num?)?.toDouble(),
+    merchantId: json['merchantId'] as int?,
+    perCost: (json['perCost'] as num?)?.toDouble(),
+    supplierId: json['supplierId'] as int?,
+    type: json['type'] as int?,
+    wholesalePrice: (json['wholesalePrice'] as num?)?.toDouble(),
+    isHelpPool: json['isHelpPool'] as int?,
+    imgPaths: json['imgPaths'] as String?,
+    sellNum: (json['sellNum'] as num?)?.toDouble(),
+    remark: json['remark'] as String?,
+    pointDiscount: (json['pointDiscount'] as num?)?.toDouble(),
+    unitPrice: (json['unitPrice'] as num?)?.toDouble(),
+    priceChangeFlag: json['priceChangeFlag'] as bool?,
+    productName: json['productName'] as String?,
+  );
 }
 
 Map<String, dynamic> _$ProductInfoToJson(ProductInfo instance) {
-  final val = <String, dynamic>{
-    'id': instance.id,
-    'name': instance.name,
-  };
+  final val = <String, dynamic>{};
 
   void writeNotNull(String key, dynamic value) {
     if (value != null) {
@@ -82,6 +79,8 @@ Map<String, dynamic> _$ProductInfoToJson(ProductInfo instance) {
     }
   }
 
+  writeNotNull('id', instance.id);
+  val['name'] = instance.name;
   writeNotNull('number', instance.number);
   writeNotNull('pic', instance.pic);
   writeNotNull('barcode', instance.barcode);
@@ -168,3 +167,50 @@ Map<String, dynamic> _$ProductTypeToJson(ProductType instance) {
       'subCategory', instance.subCategory?.map((e) => e.toJson()).toList());
   return val;
 }
+
+ProductSupplier _$ProductSupplierFromJson(Map json) {
+  return ProductSupplier(
+    name: json['name'] as String,
+    id: json['id'] as int,
+    address: json['address'] as String?,
+    contactName: json['contactName'] as String?,
+    phoneNumber: json['phoneNumber'] as String?,
+    remark: json['remark'] as String?,
+    isDefault: json['isDefault'] as int?,
+  );
+}
+
+Map<String, dynamic> _$ProductSupplierToJson(ProductSupplier instance) {
+  final val = <String, dynamic>{
+    'name': instance.name,
+    'id': instance.id,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('address', instance.address);
+  writeNotNull('contactName', instance.contactName);
+  writeNotNull('phoneNumber', instance.phoneNumber);
+  writeNotNull('remark', instance.remark);
+  writeNotNull('isDefault', instance.isDefault);
+  return val;
+}
+
+ProductSupplierList _$ProductSupplierListFromJson(Map json) {
+  return ProductSupplierList(
+    (json['data'] as List<dynamic>)
+        .map((e) =>
+            ProductSupplier.fromJson(Map<String, dynamic>.from(e as Map)))
+        .toList(),
+  );
+}
+
+Map<String, dynamic> _$ProductSupplierListToJson(
+        ProductSupplierList instance) =>
+    <String, dynamic>{
+      'data': instance.data.map((e) => e.toJson()).toList(),
+    };

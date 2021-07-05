@@ -18,13 +18,53 @@ class ProductList {
 
 @JsonSerializable()
 class ProductInfo {
-  ProductInfo(
+  ProductInfo({
     this.id,
-    this.name,
-    this.price,
-  );
+    required this.name,
+    required this.price,
+    this.number,
+    this.pic,
+    this.barcode,
+    this.brand,
+    this.createTime,
+    this.customer,
+    this.memberPrice,
+    this.saleNumber,
+    this.standard,
+    this.status,
+    this.typeName,
+    this.unit,
+    this.saleType,
+    this.activityInfos,
+    this.enableMemberDiscount,
+    this.pictures,
+    this.createBy,
+    this.customInfo,
+    this.description,
+    this.nameAbbr,
+    this.shareImagePath,
+    this.supplierName,
+    this.updateBy,
+    this.updateTime,
+    this.cost,
+    this.isDeleted,
+    this.limitNum,
+    this.merchantId,
+    this.perCost,
+    this.supplierId,
+    this.type,
+    this.wholesalePrice,
+    this.isHelpPool,
+    this.imgPaths,
+    this.sellNum,
+    this.remark,
+    this.pointDiscount,
+    this.unitPrice,
+    this.priceChangeFlag,
+    this.productName,
+  });
 
-  int id;
+  int? id;
   String name;
   double? number;
   String? pic;
@@ -116,4 +156,40 @@ class ProductType {
       _$ProductTypeFromJson(json);
 
   toJson() => _$ProductTypeToJson(this);
+}
+
+@JsonSerializable()
+class ProductSupplier {
+  ProductSupplier({
+    required this.name,
+    required this.id,
+    this.address,
+    this.contactName,
+    this.phoneNumber,
+    this.remark,
+    this.isDefault,
+  });
+  String name;
+  int id;
+  String? address;
+  String? contactName;
+  String? phoneNumber;
+  String? remark;
+  int? isDefault;
+
+  factory ProductSupplier.fromJson(Map<String, dynamic> json) =>
+      _$ProductSupplierFromJson(json);
+
+  toJson() => _$ProductSupplierToJson(this);
+}
+
+@JsonSerializable()
+class ProductSupplierList {
+  ProductSupplierList(this.data);
+  List<ProductSupplier> data;
+
+  factory ProductSupplierList.fromJson(Map<String, dynamic> json) =>
+      _$ProductSupplierListFromJson(json);
+
+  toJson() => _$ProductSupplierListToJson(this);
 }

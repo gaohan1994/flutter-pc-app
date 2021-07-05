@@ -318,7 +318,7 @@ class _ShopCartState extends State<ShopCart> {
         CashierRefundProduct _cashierRefundProduct = CashierRefundProduct(
           changeNumber: _currentProduct.sellNum ?? 0,
           unitPrice: _currentProduct.unitPrice ?? _currentProduct.price,
-          productId: _currentProduct.id,
+          productId: _currentProduct.id!,
           productName: _currentProduct.name,
         );
 
