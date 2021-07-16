@@ -18,8 +18,9 @@ class MorePage extends StatefulWidget {
 class _MorePage extends State<MorePage> {
   void onItemPress(MoreItem item) {
     if (item.title == '商品') {
-      print('sp');
       Application.router?.navigateTo(context, '/product');
+    } else if (item.title == '交接班') {
+      Application.router?.navigateTo(context, '/summary');
     }
   }
 
@@ -33,15 +34,18 @@ class _MorePage extends State<MorePage> {
   @override
   Widget build(BuildContext context) {
     List<MoreItem> _items1 = [MoreItem('商品', 'assets/icon_more_shop.png')];
+    List<MoreItem> _items2 = [
+      MoreItem('交接班', 'assets/icon_more_jiaojiebna.png')
+    ];
 
     return Scaffold(
         body: Padding(
-      padding: EdgeInsets.fromLTRB(20.w, 22.w, 20.w, 22.w),
+      padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 22.w),
       child: Column(
-        // mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _buildSection('商品', _items1),
+          _buildSection('交接班', _items2),
         ],
       ),
     ));
@@ -49,10 +53,10 @@ class _MorePage extends State<MorePage> {
 
   Widget _buildSection(title, List<MoreItem> items) {
     return Container(
+      margin: EdgeInsets.only(top: 30.w),
       alignment: Alignment.topLeft,
       width: 910.w,
       child: Column(
-        // mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(

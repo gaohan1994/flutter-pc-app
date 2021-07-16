@@ -36,5 +36,8 @@ class Routes {
 
     // 更多->商品
     router.define('/product', handler: handlerProduct);
+
+    // 更多->交接班
+    router.define('/summary', handler: handlerSummary);
   }
 }

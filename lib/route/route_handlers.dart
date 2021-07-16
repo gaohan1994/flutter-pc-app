@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluro/fluro.dart';
 import 'package:pc_app/pages/more/product.dart';
+import 'package:pc_app/pages/more/summary.dart';
 import '../pages/order.dart';
 import '../pages/sign/login.dart';
 import '../pages/index.dart';
@@ -25,4 +26,9 @@ Handler loginHandler = Handler(handlerFunc:
 Handler handlerProduct = Handler(handlerFunc:
     ((BuildContext? context, Map<String, List<String>> parameters) {
   return ProductPage();
+}));
+
+Handler handlerSummary = Handler(handlerFunc:
+    ((BuildContext? context, Map<String, List<String>> parameters) {
+  return SummaryPage();
 }));
